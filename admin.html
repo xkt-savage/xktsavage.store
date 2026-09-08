@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XKT — Panel de Personalización</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #9333EA; --red-dark: #6B21A8;
+    --grad-red: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%);
+    --bg: #0a0a0c; --surface: #101013; --surface2: #16161b; --surface3: #1f1f26;
+    --border: rgba(255,255,255,0.09); --border-2: rgba(255,255,255,0.15);
+    --text: #F2F2F4; --muted: #8a8a93;
+    --font-head: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif; --font-display: 'Bebas Neue', sans-serif;
+    --ease: cubic-bezier(0.22,1,0.36,1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--red-dark); border-radius: 4px; }
+  a { color: var(--red); }
+
+  /* LOGIN GATE */
+  .gate { position: fixed; inset: 0; z-index: 500; background: radial-gradient(800px 500px at 70% -10%, rgba(147,51,234,0.12), transparent 60%), var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .gate-box { background: var(--surface2); border: 1px solid var(--border-2); border-radius: 18px; max-width: 380px; width: 100%; padding: 36px 30px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+  .gate-logo { font-family: var(--font-display); font-size: 40px; letter-spacing: 6px; text-align: center; margin-bottom: 4px; }
+  .gate-logo span { color: var(--red); }
+  .gate-sub { text-align: center; color: var(--muted); font-family: var(--font-head); letter-spacing: 3px; text-transform: uppercase; font-size: 12px; margin-bottom: 26px; }
+  .gate-box input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-size: 15px; padding: 12px 14px; margin-bottom: 12px; }
+  .gate-box input:focus { outline: none; border-color: var(--red); }
+  .gate-box button { width: 100%; font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; background: var(--grad-red); border: none; padding: 14px; border-radius: 9px; cursor: pointer; margin-top: 6px; transition: transform .15s; }
+  .gate-box button:hover { transform: translateY(-2px); }
+  .gate-err { color: #ff6b6b; font-size: 13px; text-align: center; min-height: 18px; margin-top: 10px; }
+
+  /* TOPBAR */
+  .topbar { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; background: rgba(13,13,16,0.9); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); position: relative; z-index: 10; }
+  .topbar-logo { font-family: var(--font-display); font-size: 24px; letter-spacing: 5px; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .topbar-logo span { color: var(--red); }
+  .topbar-logo small { font-family: var(--font-head); font-size: 11px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
+  .topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tb-btn { font-family: var(--font-head); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text); background: var(--surface2); border: 1px solid var(--border); padding: 9px 16px; border-radius: 8px; cursor: pointer; transition: all .2s var(--ease); display: inline-flex; align-items: center; gap: 7px; }
+  .tb-btn:hover { border-color: var(--border-2); background: var(--surface3); }
+  .tb-btn.primary { background: var(--grad-red); border-color: transparent; color: #fff; box-shadow: 0 4px 14px rgba(147,51,234,0.3); }
+  .tb-btn.primary:hover { transform: translateY(-1px); }
+
+  /* LAYOUT */
+  .layout { display: flex; height: calc(100vh - 60px); }
+  .panel { width: 470px; min-width: 360px; max-width: 52%; overflow-y: auto; border-right: 1px solid var(--border); background: var(--surface); padding: 18px 18px 80px; resize: horizontal; }
+  .preview-wrap { flex: 1; position: relative; background: #000; overflow: hidden; }
+  .preview-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .preview-bar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(13,13,16,0.92); border: 1px solid var(--border); border-radius: 100px; padding: 6px 8px; display: flex; gap: 6px; backdrop-filter: blur(10px); }
+  .vp-btn { font-family: var(--font-head); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); background: transparent; border: none; padding: 6px 14px; border-radius: 100px; cursor: pointer; transition: .2s; }
+  .vp-btn.active { background: var(--grad-red); color: #fff; }
+
+  /* SECTIONS */
+  .section { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; cursor: pointer; user-select: none; transition: background .2s; }
+  .section-head:hover { background: var(--surface3); }
+  .section-head h3 { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .section-head .chev { color: var(--muted); transition: transform .25s var(--ease); font-size: 13px; }
+  .section.collapsed .chev { transform: rotate(-90deg); }
+  .section-body { padding: 4px 18px 20px; }
+  .section.collapsed .section-body { display: none; }
+
+  /* FIELDS */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-family: var(--font-head); font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .field input[type=text], .field input[type=url], .field input[type=number], .field input[type=password], .field textarea, .field select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 10px 12px; transition: border-color .2s; }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--red); }
+  .field textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+  .field input[type=range] { width: 100%; accent-color: var(--red); }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+  .color-row { display: flex; align-items: center; gap: 10px; }
+  .color-row input[type=color] { width: 46px; height: 40px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); cursor: pointer; padding: 3px; }
+  .check { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--text); cursor: pointer; margin-bottom: 10px; }
+  .check input { width: 18px; height: 18px; accent-color: var(--red); }
+
+  /* MEDIA */
+  .media-input { display: flex; gap: 8px; }
+  .media-input input { flex: 1; }
+  .upload-btn { white-space: nowrap; font-family: var(--font-head); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text); background: var(--surface3); border: 1px solid var(--border); border-radius: 8px; padding: 0 14px; cursor: pointer; transition: .2s; }
+  .upload-btn:hover { border-color: var(--red); color: #fff; }
+  .media-preview { margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); display: none; }
+  .media-preview.show { display: block; }
+  .media-preview img, .media-preview video { width: 100%; max-height: 150px; object-fit: cover; display: block; }
+
+  /* CARDS (stats/trust/reviews/blocks) */
+  .blocks-toolbar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .add-btn { font-family: var(--font-head); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text); background: var(--bg); border: 1px dashed var(--border-2); border-radius: 8px; padding: 12px 8px; cursor: pointer; transition: all .2s var(--ease); display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .add-btn:hover { border-color: var(--red); color: #fff; background: rgba(147,51,234,0.06); }
+  .add-btn .ico { font-size: 18px; }
+  .add-wide { flex-direction: row !important; width: 100%; margin-top: 6px; }
+  .card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; background: var(--surface3); }
+  .card-head .ctype { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 8px; }
+  .card-head .ctype .badge { background: var(--grad-red); color: #fff; font-size: 9px; padding: 2px 7px; border-radius: 4px; letter-spacing: 1px; }
+  .c-actions { display: flex; gap: 4px; }
+  .c-actions button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: .2s; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .c-actions button:hover { color: #fff; border-color: var(--border-2); }
+  .c-actions button.del:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .drag-handle { cursor: grab; color: var(--muted); font-size: 15px; padding: 0 2px; user-select: none; }
+  .drag-handle:active { cursor: grabbing; }
+  .card.dragging, .lay-row.dragging { opacity: .45; }
+  .card.drop-target, .lay-row.drop-target { outline: 2px dashed var(--red); outline-offset: 2px; }
+  .card-body { padding: 14px; }
+  .empty { text-align: center; padding: 24px 10px; color: var(--muted); font-size: 13px; border: 1px dashed var(--border); border-radius: 10px; }
+  .subcard { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 12px; margin-bottom: 10px; }
+  .subhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: var(--font-head); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .subhead .del { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); cursor: pointer; }
+  .subhead .del:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* LAYOUT MANAGER */
+  .lay-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; padding: 10px 12px; margin-bottom: 8px; }
+  .lay-row .lay-name { flex: 1; font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase; font-size: 13px; }
+  .lay-row .lay-vis { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .lay-row .lay-vis input { width: 16px; height: 16px; accent-color: var(--red); }
+  .lay-row .c-actions button { background: var(--surface2); }
+
+  /* MODAL */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-bg.open { display: flex; }
+  .modal-box { background: var(--surface2); border: 1px solid var(--border-2); border-radius: 16px; max-width: 460px; width: 100%; padding: 28px; }
+  .modal-box h2 { font-family: var(--font-head); font-size: 20px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .modal-box .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+  .modal-box .field label { color: var(--text); }
+  .warn { background: rgba(147,51,234,0.08); border: 1px solid rgba(147,51,234,0.3); border-radius: 8px; padding: 12px; font-size: 12.5px; color: #f0c9c9; line-height: 1.5; margin: 8px 0 18px; }
+  .modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 120px); z-index: 600; background: var(--surface2); border: 1px solid var(--border-2); border-radius: 10px; padding: 13px 22px; font-family: var(--font-head); font-size: 13px; letter-spacing: 1px; color: #fff; transition: transform .4s var(--ease); max-width: 90%; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast.error { border-color: rgba(147,51,234,0.6); }
+  .toast.success { border-color: rgba(34,181,107,0.6); }
+
+  @media (max-width: 820px) {
+    .layout { flex-direction: column; height: auto; }
+    body { overflow: auto; height: auto; }
+    .panel { width: 100%; max-width: 100%; resize: none; border-right: 0; border-bottom: 1px solid var(--border); }
+    .preview-wrap { height: 70vh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">XK<span>T</span></div>
+    <div class="gate-sub">Panel privado</div>
+    <form id="gateForm">
+      <input type="text" id="gateUser" placeholder="Usuario" autocomplete="username">
+      <input type="password" id="gatePass" placeholder="Contraseña" autocomplete="current-password">
+      <label class="check" style="margin:4px 2px 8px;color:var(--muted)"><input type="checkbox" id="gateRemember"> Mantener sesión iniciada</label>
+      <button type="submit">Entrar</button>
+      <div class="gate-err" id="gateErr"></div>
+    </form>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-logo">XK<span>T</span> <small>Panel</small></div>
+  <div class="topbar-actions">
+    <button class="tb-btn" id="btnOpenSite" title="Abrir el sitio en otra pestaña">🌐 Ver sitio</button>
+    <button class="tb-btn" id="btnImport">📥 Importar</button>
+    <button class="tb-btn" id="btnExport">💾 Exportar</button>
+    <button class="tb-btn" id="btnReset">↩️ Reset</button>
+    <button class="tb-btn primary" id="btnPublish">🚀 Publicar</button>
+    <button class="tb-btn" id="btnLogout" title="Cerrar sesión">🔒</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="panel" id="panel">
+
+    <!-- BRANDING -->
+    <div class="section" data-key="branding">
+      <div class="section-head"><h3>🎨 Marca y logo</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field-row">
+          <div class="field"><label>Logo (texto)</label><input type="text" data-bind="branding.logoText"></div>
+          <div class="field" style="max-width:130px"><label>Letra en rojo (índice)</label><input type="number" min="0" data-bind="branding.accentIndex"></div>
+        </div>
+        <div class="hint">El índice marca qué letra va en rojo (0 = primera). "XKT" con índice 1 = la "V".</div>
+        <div class="field">
+          <label>Logo como imagen (opcional)</label>
+          <div class="media-input"><input type="text" data-bind="branding.logoImage" placeholder="Si pones una imagen, sustituye al texto"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div>
+          <div class="media-preview"></div>
+        </div>
+        <div class="field"><label>Color principal</label>
+          <div class="color-row"><input type="color" data-bind="branding.primaryColor" id="primaryColorPicker"><input type="text" data-bind="branding.primaryColor" id="primaryColorText" style="flex:1"></div>
+        </div>
+        <div class="field"><label>URL de Discord</label><input type="url" data-bind="branding.discordUrl"></div>
+        <div class="field-row">
+          <div class="field"><label>Botón nav — texto</label><input type="text" data-bind="branding.navCtaLabel"></div>
+          <div class="field"><label>Botón nav — enlace</label><input type="text" data-bind="branding.navCtaHref"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FONDO -->
+    <div class="section" data-key="background">
+      <div class="section-head"><h3>🖼️ Fondo del sitio</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Color de fondo</label>
+          <div class="color-row"><input type="color" data-bind="background.color" id="bgColorPicker"><input type="text" data-bind="background.color" style="flex:1"></div>
+        </div>
+        <div class="field">
+          <label>Imagen de fondo (opcional)</label>
+          <div class="media-input"><input type="text" data-bind="background.image" placeholder="URL o sube una imagen"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div>
+          <div class="media-preview"></div>
+        </div>
+        <div class="field"><label>Opacidad de la imagen: <span id="bgOpacityVal"></span></label><input type="range" min="0" max="1" step="0.05" data-bind="background.opacity" data-out="bgOpacityVal"></div>
+        <div class="field"><label>Oscurecer fondo: <span id="bgOverlayVal"></span></label><input type="range" min="0" max="0.9" step="0.05" data-bind="background.overlay" data-out="bgOverlayVal"></div>
+        <label class="check"><input type="checkbox" data-bind="background.showOrbs"> Mostrar luces difuminadas (orbes)</label>
+        <label class="check"><input type="checkbox" data-bind="background.showGrid"> Mostrar rejilla de fondo</label>
+      </div>
+    </div>
+
+    <!-- TEMA -->
+    <div class="section" data-key="theme">
+      <div class="section-head"><h3>🅰️ Tema (textos, fuentes, botones)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field-row">
+          <div class="field"><label>Color de texto</label><div class="color-row"><input type="color" data-bind="theme.textColor"><input type="text" data-bind="theme.textColor" style="flex:1"></div></div>
+          <div class="field"><label>Color texto apagado</label><div class="color-row"><input type="color" data-bind="theme.mutedColor"><input type="text" data-bind="theme.mutedColor" style="flex:1"></div></div>
+        </div>
+        <div class="field"><label>Color de títulos</label><div class="color-row"><input type="color" data-bind="theme.headingColor"><input type="text" data-bind="theme.headingColor" style="flex:1"></div></div>
+        <div class="field"><label>Color de los iconos</label><div class="color-row"><input type="color" data-bind="theme.iconColor"><input type="text" data-bind="theme.iconColor" style="flex:1"></div></div>
+        <div class="field"><label>Alineación de los títulos</label>
+          <select data-bind="theme.headingAlign">
+            <option value="left">Izquierda</option>
+            <option value="center">Centro</option>
+            <option value="right">Derecha</option>
+          </select>
+        </div>
+        <div class="field"><label>Fuente de títulos grandes (display)</label>
+          <select data-bind="theme.fontDisplay">
+            <option>Bebas Neue</option><option>Anton</option><option>Archivo Black</option><option>Oswald</option><option>Teko</option>
+          </select>
+        </div>
+        <div class="field"><label>Fuente de encabezados</label>
+          <select data-bind="theme.fontHead">
+            <option>Barlow Condensed</option><option>Oswald</option><option>Teko</option><option>Saira Condensed</option><option>Rajdhani</option>
+          </select>
+        </div>
+        <div class="field"><label>Fuente del cuerpo</label>
+          <select data-bind="theme.fontBody">
+            <option>Barlow</option><option>Inter</option><option>Poppins</option><option>Roboto</option><option>Montserrat</option><option>Rajdhani</option>
+          </select>
+        </div>
+        <div class="field"><label>Forma de los botones</label>
+          <select data-bind="theme.buttonStyle">
+            <option value="slant">Inclinada (por defecto)</option>
+            <option value="rounded">Redondeada</option>
+            <option value="pill">Píldora</option>
+            <option value="square">Recta</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="section" data-key="hero">
+      <div class="section-head"><h3>🦸 Portada (Hero)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta superior</label><input type="text" data-bind="hero.tag"></div>
+        <label class="check"><input type="checkbox" data-bind="hero.showTag"> Mostrar la etiqueta superior (pastilla)</label>
+        <div class="field-row">
+          <div class="field"><label>Título</label><input type="text" data-bind="hero.title"></div>
+          <div class="field" style="max-width:120px"><label>Letra en rojo</label><input type="number" min="0" data-bind="hero.titleAccentIndex"></div>
+        </div>
+        <div class="field"><label>Subtítulo grande (contorno)</label><input type="text" data-bind="hero.titleOutline"></div>
+        <div class="field-row">
+          <div class="field"><label>Color del título</label><div class="color-row"><input type="color" data-bind="hero.titleColor"><input type="text" data-bind="hero.titleColor" style="flex:1"></div></div>
+          <div class="field"><label>Color del contorno</label><div class="color-row"><input type="color" data-bind="hero.outlineColor"><input type="text" data-bind="hero.outlineColor" placeholder="vacío = degradado" style="flex:1"></div></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Grosor del contorno (px)</label><input type="number" min="0" max="8" step="1" data-bind="hero.outlineWidth"></div>
+          <div class="field"><label>Alineación del hero</label><select data-bind="hero.align"><option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option></select></div>
+        </div>
+        <div class="field"><label>Descripción</label><textarea data-bind="hero.subtitle"></textarea></div>
+        <div class="field"><label>Imagen del título (PNG, en vez del texto XKT/SAVAGE)</label><div class="media-input"><input type="text" data-bind="hero.titleImage" placeholder="URL o sube un PNG; vacío = usar texto"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div><div class="media-preview"></div></div>
+        <div class="field"><label>Tamaño de la imagen del título (px)</label><input type="range" min="120" max="900" step="10" data-bind="hero.titleImageSize" data-out="tiSizeVal"> <span id="tiSizeVal" style="color:var(--muted);font-size:12px"></span></div>
+        <div class="field-row">
+          <div class="field"><label>Botón 1 — texto</label><input type="text" data-bind="hero.primaryBtnLabel"></div>
+          <div class="field"><label>Botón 1 — enlace</label><input type="text" data-bind="hero.primaryBtnHref"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Botón 2 — texto</label><input type="text" data-bind="hero.ghostBtnLabel"></div>
+          <div class="field"><label>Botón 2 — enlace</label><input type="text" data-bind="hero.ghostBtnHref"></div>
+        </div>
+        <div class="field">
+          <label>Imagen de fondo del Hero (opcional)</label>
+          <div class="media-input"><input type="text" data-bind="hero.bgImage" placeholder="URL o sube una imagen"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div>
+          <div class="media-preview"></div>
+        </div>
+        <label class="check"><input type="checkbox" data-bind="hero.parallax"> Efecto parallax (la foto se revela al bajar y el hero se desvanece)</label>
+      </div>
+    </div>
+
+    <!-- HERO TICKER -->
+    <div class="section collapsed" data-key="heroTicker">
+      <div class="section-head"><h3>🏷️ Barra del Hero (ticker)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <label class="check"><input type="checkbox" data-bind="heroTicker.show"> Mostrar la barra</label>
+        <div class="field-row">
+          <div class="field"><label>Posición</label><select data-bind="heroTicker.position"><option value="bottom">Abajo del hero</option><option value="top">Arriba (pegada al menú)</option></select></div>
+          <div class="field"><label>Dirección</label><select data-bind="heroTicker.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option></select></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" data-bind="heroTicker.speed"></div>
+          <div class="field"><label>Grosor (px)</label><input type="number" min="20" max="90" data-bind="heroTicker.height"></div>
+        </div>
+        <div class="field"><label>Transparencia: <span id="tkOpVal"></span></label><input type="range" min="0.1" max="1" step="0.05" data-bind="heroTicker.opacity" data-out="tkOpVal"></div>
+        <div class="field-row">
+          <div class="field"><label>Color de fondo</label><div class="color-row"><input type="color" data-bind="heroTicker.bgColor"><input type="text" data-bind="heroTicker.bgColor" placeholder="vacío = rojo" style="flex:1"></div></div>
+          <div class="field"><label>Color del texto</label><div class="color-row"><input type="color" data-bind="heroTicker.textColor"><input type="text" data-bind="heroTicker.textColor" style="flex:1"></div></div>
+        </div>
+        <div id="tickerList"></div>
+        <button class="add-btn add-wide" id="addTicker"><span class="ico">＋</span> Añadir texto</button>
+      </div>
+    </div>
+
+    <!-- MÚSICA -->
+    <div class="section collapsed" data-key="music">
+      <div class="section-head"><h3>🎵 Reproductor de música</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <label class="check"><input type="checkbox" data-bind="music.enabled"> Activar el reproductor</label>
+        <label class="check"><input type="checkbox" data-bind="music.autoplay"> Reproducir automáticamente al entrar</label>
+        <div id="musicList"></div>
+        <button class="add-btn add-wide" id="addTrack"><span class="ico">＋</span> Añadir canción</button>
+        <div class="field-row" style="margin-top:12px">
+          <div class="field"><label>Posición</label><select data-bind="music.position"><option value="pos-br">Abajo derecha</option><option value="pos-bl">Abajo izquierda</option><option value="pos-tr">Arriba derecha</option><option value="pos-tl">Arriba izquierda</option></select></div>
+          <div class="field"><label>Color</label><div class="color-row"><input type="color" data-bind="music.color"><input type="text" data-bind="music.color" style="flex:1"></div></div>
+        </div>
+        <div class="hint">Cada canción lleva su título y artista/info (lo escribes tú). ⚠️ Los navegadores bloquean el autoplay con sonido hasta que el usuario interactúa; si pasa, arrancará al primer clic. Para varios MB usa URL externa, no subas el MP3.</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="section collapsed" data-key="stats">
+      <div class="section-head"><h3>📊 Estadísticas</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div id="statsList"></div>
+        <button class="add-btn add-wide" id="addStat"><span class="ico">＋</span> Añadir estadística</button>
+      </div>
+    </div>
+
+    <!-- VENTAJAS / TRUST -->
+    <div class="section collapsed" data-key="trust">
+      <div class="section-head"><h3>✅ Ventajas</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div id="trustList"></div>
+        <button class="add-btn add-wide" id="addTrust"><span class="ico">＋</span> Añadir ventaja</button>
+      </div>
+    </div>
+
+    <!-- MARQUEE -->
+    <div class="section collapsed" data-key="marquee">
+      <div class="section-head"><h3>🔁 Texto deslizante (marquee)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field-row">
+          <div class="field"><label>Dirección</label><select data-bind="marquee.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option></select></div>
+          <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" data-bind="marquee.speed"></div>
+        </div>
+        <div id="marqueeList"></div>
+        <button class="add-btn add-wide" id="addMarquee"><span class="ico">＋</span> Añadir palabra</button>
+      </div>
+    </div>
+
+    <!-- SCRIPTS HEADING + LAYOUT -->
+    <div class="section collapsed" data-key="scriptsHeading">
+      <div class="section-head"><h3>🛒 Tienda (título y disposición)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta</label><input type="text" data-bind="scriptsHeading.tag"></div>
+        <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="scriptsHeading.title"></textarea></div>
+        <div class="field"><label>Descripción</label><textarea data-bind="scriptsHeading.desc"></textarea></div>
+        <div class="field"><label>Disposición de los scripts</label>
+          <select data-bind="scriptsLayout.mode"><option value="grid">Cuadrícula (estático)</option><option value="carousel">Carrusel deslizante</option></select>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Dirección del carrusel</label><select data-bind="scriptsLayout.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option><option value="static">⏸️ Estático (scroll manual)</option></select></div>
+          <div class="field"><label>Velocidad (seg)</label><input type="number" min="10" max="160" data-bind="scriptsLayout.speed"></div>
+        </div>
+        <div class="hint">El carrusel desliza las tarjetas; al pasar el ratón se pausa para poder hacer clic. "Estático" permite arrastrar/scroll en horizontal.</div>
+        <div class="field-row">
+          <div class="field"><label>Tamaño de las tarjetas</label><select data-bind="store.cardSize"><option value="compact">Pequeñas (compactas)</option><option value="normal">Normal</option><option value="large">Grandes</option></select></div>
+          <div class="field"><label>Forma de la etiqueta de precio</label><select data-bind="store.priceTagShape"><option value="slant">Inclinada</option><option value="rounded">Redondeada</option><option value="pill">Píldora</option><option value="square">Recta</option><option value="cut">Cortada</option></select></div>
+        </div>
+        <div class="field"><label>Estilo de miniatura</label><select data-bind="store.thumbStyle"><option value="frame">Con marco (recortada)</option><option value="clean">Solo PNG (sin marco, cuadrada)</option></select></div>
+        <div class="field"><label>Oscuridad del fondo en la página del producto: <span id="prDarkVal"></span></label><input type="range" min="0.3" max="0.97" step="0.03" data-bind="store.productBgDark" data-out="prDarkVal"></div>
+        <div class="hint">"Solo PNG": muestra tu imagen cuadrada completa sin recuadro ni recorte, con la etiqueta de precio y "Comprar ahora" debajo. Ideal si subes los PNG ya con su outline.</div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="section collapsed" data-key="reviews">
+      <div class="section-head"><h3>⭐ Reviews</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta</label><input type="text" data-bind="reviews.tag"></div>
+        <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="reviews.title"></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>Vista</label><select data-bind="reviews.view"><option value="grid">Cuadrícula</option><option value="carousel">Carrusel</option></select></div>
+          <div class="field"><label>Dirección (carrusel)</label><select data-bind="reviews.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option></select></div>
+          <div class="field" style="max-width:110px"><label>Velocidad</label><input type="number" min="10" max="120" data-bind="reviews.speed"></div>
+        </div>
+        <div id="reviewsList"></div>
+        <button class="add-btn add-wide" id="addReview"><span class="ico">＋</span> Añadir review</button>
+      </div>
+    </div>
+
+    <!-- DISCORD EN VIVO -->
+    <div class="section collapsed" data-key="discordFeed">
+      <div class="section-head"><h3>💬 Discord en vivo</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta</label><input type="text" data-bind="discordFeed.tag"></div>
+        <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="discordFeed.title"></textarea></div>
+        <div class="field"><label>Descripción</label><input type="text" data-bind="discordFeed.desc"></div>
+        <div class="field"><label>Server ID</label><input type="text" data-bind="discordFeed.serverId" placeholder="Ej: 123456789012345678"></div>
+        <div class="hint">Un robot de GitHub copia las publicaciones a <strong>discord/feed.json</strong> cada ~5 min (sin hosting). Necesita: bot en tu servidor con permiso de ver/leer esos canales + secreto <strong>DISCORD_BOT_TOKEN</strong> en el repo. Guía en <strong>discord/README.md</strong>. Los IDs se copian con clic derecho → Copiar ID (modo desarrollador).</div>
+        <div id="dcList"></div>
+        <button class="add-btn add-wide" id="addDcChannel"><span class="ico">＋</span> Añadir canal</button>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="section collapsed" data-key="cta">
+      <div class="section-head"><h3>💬 CTA Discord</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta</label><input type="text" data-bind="cta.tag"></div>
+        <div class="field"><label>Título</label><input type="text" data-bind="cta.title"></div>
+        <div class="hint">Usa <strong>|</strong> para marcar la parte en rojo. Ej: "ÚNETE A NUESTRA |FAMILIA".</div>
+        <div class="field"><label>Descripción</label><textarea data-bind="cta.desc"></textarea></div>
+        <div class="field"><label>Texto del botón</label><input type="text" data-bind="cta.btnLabel"></div>
+        <div class="field-row">
+          <div class="field"><label>2º botón — texto (opcional)</label><input type="text" data-bind="cta.btn2Label"></div>
+          <div class="field"><label>2º botón — enlace</label><input type="text" data-bind="cta.btn2Href"></div>
+        </div>
+        <div class="field"><label>Línea de miembros (opcional)</label><input type="text" data-bind="cta.membersText" placeholder="Ej: +12.000 miembros activos"></div>
+        <div class="field"><label>Imagen de fondo (opcional)</label><div class="media-input"><input type="text" data-bind="cta.image" placeholder="URL o sube una imagen"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div><div class="media-preview"></div></div>
+        <div class="field-row">
+          <div class="field"><label>Color de fondo (si no hay imagen)</label><div class="color-row"><input type="color" data-bind="cta.bgColor"><input type="text" data-bind="cta.bgColor" placeholder="vacío = degradado" style="flex:1"></div></div>
+          <div class="field"><label>Alineación</label><select data-bind="cta.align"><option value="left">Izquierda</option><option value="center">Centro</option></select></div>
+        </div>
+        <div class="field"><label>Oscurecer imagen: <span id="ctaOvVal"></span></label><input type="range" min="0" max="1" step="0.05" data-bind="cta.overlay" data-out="ctaOvVal"></div>
+      </div>
+    </div>
+
+    <!-- EXTRAS HEADING -->
+    <div class="section collapsed" data-key="extrasHeading">
+      <div class="section-head"><h3>🏷️ Título de "Contenido extra"</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta</label><input type="text" data-bind="extrasHeading.tag"></div>
+        <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="extrasHeading.title"></textarea></div>
+        <div class="hint">Solo aparece si añades al menos un bloque abajo.</div>
+      </div>
+    </div>
+
+    <!-- BLOQUES -->
+    <div class="section" data-key="blocks">
+      <div class="section-head"><h3>🧩 Bloques personalizados</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="blocks-toolbar">
+          <button class="add-btn" data-add="title"><span class="ico">🔠</span> Título</button>
+          <button class="add-btn" data-add="text"><span class="ico">📝</span> Texto</button>
+          <button class="add-btn" data-add="image"><span class="ico">🖼️</span> Imagen</button>
+          <button class="add-btn" data-add="gif"><span class="ico">🎞️</span> GIF</button>
+          <button class="add-btn" data-add="video"><span class="ico">🎬</span> Vídeo</button>
+          <button class="add-btn" data-add="embed"><span class="ico">📺</span> Embed</button>
+          <button class="add-btn" data-add="marquee"><span class="ico">🔁</span> Barra texto</button>
+          <button class="add-btn" data-add="window"><span class="ico">🪟</span> Ventana</button>
+          <button class="add-btn" data-add="features"><span class="ico">🧱</span> Features</button>
+          <button class="add-btn" data-add="faq"><span class="ico">❓</span> FAQ</button>
+          <button class="add-btn" data-add="gallery"><span class="ico">🖼️</span> Galería</button>
+          <button class="add-btn" data-add="carousel"><span class="ico">🎠</span> Carrusel</button>
+          <button class="add-btn" data-add="buttons"><span class="ico">🔘</span> Botones</button>
+          <button class="add-btn" data-add="banner"><span class="ico">📢</span> Banner</button>
+          <button class="add-btn" data-add="divider"><span class="ico">➖</span> Separador</button>
+          <button class="add-btn" data-add="partners"><span class="ico">🤝</span> Partners</button>
+        </div>
+        <div id="blocksList"></div>
+      </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="section" data-key="layout">
+      <div class="section-head"><h3>🧱 Orden y visibilidad de secciones</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="hint" style="margin-bottom:12px">Arrastra con las flechas para reordenar y usa la casilla para mostrar u ocultar cada sección.</div>
+        <div id="layoutList"></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <div class="preview-wrap">
+    <div class="preview-bar">
+      <button class="vp-btn active" data-vp="desktop">🖥️ Escritorio</button>
+      <button class="vp-btn" data-vp="mobile">📱 Móvil</button>
+      <button class="vp-btn" id="vpReload">🔄</button>
+    </div>
+    <iframe id="preview" src="index.html?preview=1"></iframe>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-bg" id="publishModal">
+  <div class="modal-box">
+    <h2>🚀 Publicar cambios</h2>
+    <p class="sub">Guarda <strong>config.json</strong> en tu repositorio de GitHub. GitHub Pages actualizará el sitio en 1-2 minutos.</p>
+    <div class="field-row">
+      <div class="field"><label>Owner</label><input type="text" id="ghOwner" value="xkt-savage"></div>
+      <div class="field"><label>Repositorio</label><input type="text" id="ghRepo" value="xktsavage.store"></div>
+    </div>
+    <div class="field"><label>Rama</label><input type="text" id="ghBranch" value="main"></div>
+    <div class="field"><label>Token de GitHub (fine-grained)</label><input type="password" id="ghToken" placeholder="github_pat_..."></div>
+    <label class="check"><input type="checkbox" id="ghRemember"> Recordar token en este navegador</label>
+    <div class="warn">⚠️ Usa un <strong>token fine-grained</strong> con permiso <em>Contents: Read and write</em> solo para este repo. El token se guarda únicamente en tu navegador. No lo uses en ordenadores compartidos.</div>
+    <div class="modal-foot">
+      <button class="tb-btn" id="publishCancel">Cancelar</button>
+      <button class="tb-btn primary" id="publishConfirm">Publicar ahora</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// LOGIN (gate cliente — disuasorio, no seguridad real)
+// ─────────────────────────────────────────────
+const USER_HASH = 'a29dca0e40f4e3bb177d00ff2c2a92554cb8d7e77713b01cbc1b2993d0a025e7';
+const PASS_HASH = 'fc4b54aa2f32ce14ad550bb3724817e0c1585e297835901c1f3a10c906a2bdef';
+async function sha256(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+const gate = document.getElementById('gate');
+let appStarted = false;
+function unlock() { gate.style.display = 'none'; if (!appStarted) { appStarted = true; start(); } }
+if (localStorage.getItem('xkt_admin_auth') === '1' || sessionStorage.getItem('xkt_admin_auth') === '1') unlock();
+document.getElementById('gateForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const u = document.getElementById('gateUser').value.trim();
+  const p = document.getElementById('gatePass').value;
+  const remember = document.getElementById('gateRemember').checked;
+  const err = document.getElementById('gateErr');
+  err.textContent = 'Comprobando...';
+  try {
+    const [uh, ph] = await Promise.all([sha256(u), sha256(p)]);
+    if (uh === USER_HASH && ph === PASS_HASH) {
+      (remember ? localStorage : sessionStorage).setItem('xkt_admin_auth', '1');
+      err.textContent = ''; unlock();
+    } else err.textContent = 'Usuario o contraseña incorrectos.';
+  } catch (e) { err.textContent = 'Tu navegador no soporta el login (usa HTTPS).'; }
+});
+document.getElementById('btnLogout').addEventListener('click', () => { localStorage.removeItem('xkt_admin_auth'); sessionStorage.removeItem('xkt_admin_auth'); location.reload(); });
+
+// ─────────────────────────────────────────────
+// DEFAULTS
+// ─────────────────────────────────────────────
+const DEFAULT_CONFIG = {
+  branding: { logoText: 'XKT SAVAGE', accentIndex: 0, logoImage: '', primaryColor: '#9333EA', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
+  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#9333EA', headingAlign: 'left', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
+  background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
+  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'XKT', titleAccentIndex: 0, titleOutline: 'SAVAGE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '', titleImageSize: 360, subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
+  heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
+  music: { enabled: false, autoplay: false, position: 'pos-br', color: '#9333EA', title: 'Lofi XKT', url: '', tracks: [] },
+  stats: [
+    { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
+    { target: 50, decimal: '', suffix: '+', label: 'Scripts' },
+    { target: 4, decimal: '9', suffix: '', label: 'Rating' },
+    { target: 24, decimal: '', suffix: '/7', label: 'Soporte' }
+  ],
+  trust: [
+    { icon: 'unlock', name: 'Sin Escrow', desc: 'Código 100% abierto. Sin bloqueos ni dependencias ocultas.' },
+    { icon: 'refresh', name: 'Updates Gratis', desc: 'Actualizaciones de por vida incluidas en cada compra.' },
+    { icon: 'chat', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
+    { icon: 'bolt', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
+  ],
+  marquee: { words: ['FiveM', 'Scripts', 'XKT', 'Premium'], direction: 'left', speed: 32 },
+  scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
+  scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
+  store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame', productBgDark: 0.82 },
+  reviews: { tag: 'Lo que dicen', title: 'REVIEWS\nREALES', view: 'grid', direction: 'left', speed: 40, items: [
+    { stars: 5, text: 'El Gang System de XKT transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
+    { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
+    { stars: 5, text: 'Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.', avatar: 'NG', name: 'NightGang_ES', role: 'Admin · FiveM Server' },
+    { stars: 4, text: 'Llevo usando scripts de XKT desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
+  ] },
+  cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad XKT. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
+  discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Publicaciones.', serverId: '', channels: [] },
+  extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
+  layout: { order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'discord', 'cta'], visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, discord: true, cta: true } },
+  blocks: []
+};
+
+const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner', divider: 'Separador', partners: 'Partners' };
+const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', probador: 'Probador 3D (ropa)', reviews: 'Reviews', discord: 'Discord en vivo', cta: 'CTA Discord' };
+const ICON_OPTIONS = ['lock','unlock','refresh','chat','bolt','shield','star','download','check','clock','code','box','users','gift','headset','server','tag','cart','heart','fire','rocket','globe'];
+const DRAFT_KEY = 'xkt_admin_config';
+const PREVIEW_KEY = 'xkt_preview_config';
+
+function migrateLayout(c) {
+  c.blocks.forEach(b => { if (!b.id) b.id = 'b' + Math.random().toString(36).slice(2, 9); });
+  const blockKeys = c.blocks.map(b => 'b:' + b.id);
+  let order = (c.layout.order || []).filter(k => k !== 'extras' && (!k.startsWith('b:') || blockKeys.includes(k)));
+  ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'discord', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
+  blockKeys.forEach(k => { if (!order.includes(k)) order.push(k); });
+  c.layout.order = order;
+  if (!c.layout.visible) c.layout.visible = {};
+  order.forEach(k => { if (c.layout.visible[k] === undefined) c.layout.visible[k] = true; });
+}
+function labelFor(key) {
+  if (SECTION_LABELS[key]) return SECTION_LABELS[key];
+  if (key.startsWith('b:')) { const b = config.blocks.find(x => x.id === key.slice(2)); return 'Bloque: ' + (b ? (BLOCK_LABELS[b.type] || b.type) : '?'); }
+  return key;
+}
+
+let config = null;
+
+// ─────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+function getPath(obj, path) { return path.split('.').reduce((a, k) => (a == null ? a : a[k]), obj); }
+function setPath(obj, path, val) {
+  const keys = path.split('.'); let o = obj;
+  for (let i = 0; i < keys.length - 1; i++) { if (o[keys[i]] == null) o[keys[i]] = {}; o = o[keys[i]]; }
+  o[keys[keys.length - 1]] = val;
+}
+function attr(s) { return String(s == null ? '' : s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  clearTimeout(t._t); t._t = setTimeout(() => { t.className = 'toast ' + type; }, 3200);
+}
+function fileToDataURL(file) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); }); }
+function normalizeHex(v) { v = (v || '').trim(); return /^#?[0-9a-fA-F]{6}$/.test(v) ? (v[0] === '#' ? v : '#' + v) : '#000000'; }
+
+// ─────────────────────────────────────────────
+// PREVIEW SYNC
+// ─────────────────────────────────────────────
+const previewFrame = document.getElementById('preview');
+let pushTimer = null;
+function pushPreview() {
+  try { localStorage.setItem(PREVIEW_KEY, JSON.stringify(config)); localStorage.setItem(DRAFT_KEY, JSON.stringify(config)); } catch (e) {}
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => { if (previewFrame.contentWindow) previewFrame.contentWindow.postMessage({ type: 'xkt-config', config }, '*'); }, 120);
+}
+
+// ─────────────────────────────────────────────
+// STATIC BINDS
+// ─────────────────────────────────────────────
+function bindStaticInputs() {
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const handler = () => {
+      let v;
+      if (el.type === 'checkbox') v = el.checked;
+      else if (el.type === 'number' || el.type === 'range') v = el.value === '' ? '' : Number(el.value);
+      else v = el.value;
+      setPath(config, el.dataset.bind, v);
+      if (el.dataset.bind === 'branding.primaryColor') {
+        document.getElementById('primaryColorPicker').value = normalizeHex(v);
+        document.getElementById('primaryColorText').value = v;
+      }
+      if (el.dataset.out) { const o = document.getElementById(el.dataset.out); if (o) o.textContent = Number(v).toFixed(2); }
+      pushPreview();
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+  });
+}
+function fillStaticInputs() {
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const v = getPath(config, el.dataset.bind);
+    if (el.type === 'checkbox') el.checked = !!v;
+    else if (el.type === 'color') el.value = normalizeHex(v);
+    else el.value = (v == null ? '' : v);
+    if (el.dataset.out) { const o = document.getElementById(el.dataset.out); if (o) o.textContent = Number(v || 0).toFixed(2); }
+    if (el.closest('.media-input')) refreshMediaPreview(el);
+  });
+}
+
+// ─────────────────────────────────────────────
+// MEDIA (upload + preview) — global
+// ─────────────────────────────────────────────
+function refreshMediaPreview(input) {
+  const field = input.closest('.field'); if (!field) return;
+  const prev = field.querySelector('.media-preview'); if (!prev) return;
+  const v = (input.value || '').trim();
+  const isVideo = (field.querySelector('.upload-btn')?.dataset.accept) === 'video/*';
+  if (!v) { prev.className = 'media-preview'; prev.innerHTML = ''; return; }
+  if (isVideo) {
+    if (/youtube|youtu\.be|vimeo/.test(v)) { prev.className = 'media-preview show'; prev.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted)">🎬 Vídeo incrustado ✓</div>'; }
+    else { prev.className = 'media-preview show'; prev.innerHTML = `<video src="${attr(v)}" muted></video>`; }
+  } else { prev.className = 'media-preview show'; prev.innerHTML = `<img src="${attr(v)}">`; }
+}
+document.addEventListener('input', e => { if (e.target.matches('.media-input input')) refreshMediaPreview(e.target); });
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('.upload-btn'); if (!btn) return;
+  e.preventDefault();
+  const input = btn.closest('.media-input').querySelector('input');
+  const accept = btn.dataset.accept || 'image/*';
+  const fi = document.createElement('input'); fi.type = 'file'; fi.accept = accept;
+  fi.onchange = async () => {
+    const f = fi.files[0]; if (!f) return;
+    if (f.size > 1.5 * 1024 * 1024) toast('Archivo grande: ralentizará la web. Mejor usa una URL externa.', 'error');
+    input.value = await fileToDataURL(f);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  fi.click();
+});
+
+// ─────────────────────────────────────────────
+// GENERIC LIST EDITOR (stats, trust, reviews, marquee)
+// ─────────────────────────────────────────────
+function listHandlers(listId, arrName, renderFn, makeNew) {
+  const wrap = document.getElementById(listId);
+  const onEdit = e => {
+    const f = e.target.dataset.f; if (f === undefined) return;
+    const i = +e.target.closest('[data-i]').dataset.i;
+    let v = e.target.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value;
+    if (arrName === 'marquee') config.marquee.words[i] = v;
+    else if (arrName === 'ticker') config.heroTicker.items[i] = v;
+    else config[arrName][i][f] = v;
+    pushPreview();
+  };
+  wrap.addEventListener('input', onEdit);
+  wrap.addEventListener('change', onEdit);
+  wrap.addEventListener('click', e => {
+    const card = e.target.closest('[data-i]'); if (!card) return;
+    const i = +card.dataset.i;
+    const arr = arrName === 'marquee' ? config.marquee.words : (arrName === 'ticker' ? config.heroTicker.items : config[arrName]);
+    if (e.target.dataset.del !== undefined) { arr.splice(i, 1); renderFn(); pushPreview(); }
+    else if (e.target.dataset.move !== undefined) {
+      const j = i + (+e.target.dataset.move); if (j < 0 || j >= arr.length) return;
+      [arr[i], arr[j]] = [arr[j], arr[i]]; renderFn(); pushPreview();
+    }
+  });
+}
+function cardHead(label, i) {
+  return `<div class="card-head"><span class="ctype">${label} ${i + 1}</span><div class="c-actions"><button data-move="-1" title="Subir">▲</button><button data-move="1" title="Bajar">▼</button><button class="del" data-del title="Eliminar">✕</button></div></div>`;
+}
+
+// STATS
+function renderStats() {
+  document.getElementById('statsList').innerHTML = config.stats.map((s, i) => `
+    <div class="card" data-i="${i}">${cardHead('Stat', i)}
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Número</label><input type="number" data-f="target" value="${attr(s.target)}"></div>
+          <div class="field" style="max-width:84px"><label>Decimal</label><input type="number" min="0" max="9" data-f="decimal" value="${attr(s.decimal)}"></div>
+          <div class="field" style="max-width:84px"><label>Sufijo</label><input type="text" data-f="suffix" value="${attr(s.suffix)}"></div>
+        </div>
+        <div class="field"><label>Etiqueta</label><input type="text" data-f="label" value="${attr(s.label)}"></div>
+      </div>
+    </div>`).join('');
+}
+// TRUST
+function renderTrust() {
+  document.getElementById('trustList').innerHTML = config.trust.map((t, i) => `
+    <div class="card" data-i="${i}">${cardHead('Ventaja', i)}
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field" style="max-width:130px"><label>Icono</label><select data-f="icon">${ICON_OPTIONS.map(ic => `<option value="${ic}"${t.icon === ic ? ' selected' : ''}>${ic}</option>`).join('')}</select></div>
+          <div class="field"><label>Título</label><input type="text" data-f="name" value="${attr(t.name)}"></div>
+        </div>
+        <div class="field"><label>Descripción</label><textarea data-f="desc">${attr(t.desc)}</textarea></div>
+      </div>
+    </div>`).join('');
+}
+function renderTicker() {
+  document.getElementById('tickerList').innerHTML = config.heroTicker.items.map((w, i) => `
+    <div class="card" data-i="${i}"><div class="card-body" style="display:flex;gap:8px;align-items:center">
+      <input type="text" data-f="item" value="${attr(w)}" style="flex:1">
+      <div class="c-actions"><button data-move="-1">▲</button><button data-move="1">▼</button><button class="del" data-del>✕</button></div>
+    </div></div>`).join('');
+}
+function renderMusic() {
+  const wrap = document.getElementById('musicList'); if (!wrap) return;
+  if (!config.music.tracks.length) { wrap.innerHTML = `<div class="empty">Sin canciones. Añade una con el botón de abajo.</div>`; return; }
+  wrap.innerHTML = config.music.tracks.map((t, j) => `
+    <div class="card" data-mi="${j}">
+      <div class="card-head"><span class="ctype">Canción ${j + 1}</span><div class="c-actions"><button data-mmove="-1">▲</button><button data-mmove="1">▼</button><button class="del" data-mdel>✕</button></div></div>
+      <div class="card-body">
+        <div class="field-row"><div class="field"><label>Título</label><input type="text" data-mf="title" value="${attr(t.title)}"></div><div class="field"><label>Artista / info</label><input type="text" data-mf="artist" value="${attr(t.artist)}"></div></div>
+        <div class="field"><label>Audio (MP3) — URL o archivo</label><div class="media-input"><input type="text" data-mf="url" value="${attr(t.url)}" placeholder="https://.../cancion.mp3"><button class="upload-btn" data-accept="audio/*">⬆ Subir</button></div></div>
+      </div>
+    </div>`).join('');
+}
+(function () {
+  const wrap = document.getElementById('musicList');
+  const edit = e => { const f = e.target.dataset.mf; if (f === undefined) return; const j = +e.target.closest('[data-mi]').dataset.mi; config.music.tracks[j][f] = e.target.value; pushPreview(); };
+  wrap.addEventListener('input', edit); wrap.addEventListener('change', edit);
+  wrap.addEventListener('click', e => {
+    const card = e.target.closest('[data-mi]'); if (!card) return; const j = +card.dataset.mi;
+    if (e.target.dataset.mdel !== undefined) { config.music.tracks.splice(j, 1); renderMusic(); pushPreview(); }
+    else if (e.target.dataset.mmove !== undefined) { const k = j + (+e.target.dataset.mmove); if (k < 0 || k >= config.music.tracks.length) return; [config.music.tracks[j], config.music.tracks[k]] = [config.music.tracks[k], config.music.tracks[j]]; renderMusic(); pushPreview(); }
+  });
+})();
+document.getElementById('addTrack').addEventListener('click', () => { config.music.tracks.push({ title: 'Canción', artist: '', url: '' }); renderMusic(); pushPreview(); });
+// REVIEWS
+function renderReviews() {
+  document.getElementById('reviewsList').innerHTML = config.reviews.items.map((r, i) => `
+    <div class="card" data-i="${i}">${cardHead('Review', i)}
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field" style="max-width:90px"><label>Estrellas</label><input type="number" min="1" max="5" data-f="stars" value="${attr(r.stars)}"></div>
+          <div class="field" style="max-width:90px"><label>Iniciales</label><input type="text" data-f="avatar" value="${attr(r.avatar)}"></div>
+          <div class="field"><label>Nombre</label><input type="text" data-f="name" value="${attr(r.name)}"></div>
+        </div>
+        <div class="field"><label>Rol</label><input type="text" data-f="role" value="${attr(r.role)}"></div>
+        <div class="field"><label>Texto</label><textarea data-f="text">${attr(r.text)}</textarea></div>
+      </div>
+    </div>`).join('');
+}
+// DISCORD FEED
+function renderDiscordChannels() {
+  const wrap = document.getElementById('dcList'); if (!wrap) return;
+  if (!config.discordFeed.channels.length) { wrap.innerHTML = `<div class="empty">Sin canales. Añade el primero con el botón de abajo.</div>`; return; }
+  wrap.innerHTML = config.discordFeed.channels.map((ch, i) => `
+    <div class="card" data-dc="${i}">${cardHead('Canal', i)}
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Nombre (pestaña)</label><input type="text" data-dcf="label" value="${attr(ch.label)}" placeholder="Anuncios"></div>
+          <div class="field"><label>ID del canal</label><input type="text" data-dcf="id" value="${attr(ch.id)}" placeholder="123456789012345678"></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+(function () {
+  const wrap = document.getElementById('dcList');
+  const edit = e => { const f = e.target.dataset.dcf; if (f === undefined) return; const card = e.target.closest('[data-dc]'); if (!card) return; config.discordFeed.channels[+card.dataset.dc][f] = e.target.value; pushPreview(); };
+  wrap.addEventListener('input', edit); wrap.addEventListener('change', edit);
+  wrap.addEventListener('click', e => {
+    const card = e.target.closest('[data-dc]'); if (!card) return; const i = +card.dataset.dc;
+    if (e.target.dataset.del !== undefined) { config.discordFeed.channels.splice(i, 1); renderDiscordChannels(); pushPreview(); }
+    else if (e.target.dataset.move !== undefined) { const k = i + (+e.target.dataset.move); if (k < 0 || k >= config.discordFeed.channels.length) return; [config.discordFeed.channels[i], config.discordFeed.channels[k]] = [config.discordFeed.channels[k], config.discordFeed.channels[i]]; renderDiscordChannels(); pushPreview(); }
+  });
+})();
+document.getElementById('addDcChannel').addEventListener('click', () => { config.discordFeed.channels.push({ label: 'Canal', id: '' }); renderDiscordChannels(); pushPreview(); });
+// MARQUEE
+function renderMarquee() {
+  document.getElementById('marqueeList').innerHTML = config.marquee.words.map((w, i) => `
+    <div class="card" data-i="${i}"><div class="card-body" style="display:flex;gap:8px;align-items:center">
+      <input type="text" data-f="word" value="${attr(w)}" style="flex:1">
+      <div class="c-actions"><button data-move="-1">▲</button><button data-move="1">▼</button><button class="del" data-del>✕</button></div>
+    </div></div>`).join('');
+}
+
+// ─────────────────────────────────────────────
+// BLOCKS EDITOR
+// ─────────────────────────────────────────────
+function newBlock(type) {
+  switch (type) {
+    case 'title': return { type, tag: 'Sección', text: 'Título nuevo', subtitle: '' };
+    case 'text': return { type, text: 'Escribe aquí tu texto...' };
+    case 'image': return { type, url: '', caption: '', link: '' };
+    case 'gif': return { type, url: '', caption: '', link: '' };
+    case 'video': return { type, url: '', caption: '' };
+    case 'embed': return { type, url: '', height: 400, caption: '' };
+    case 'marquee': return { type, words: ['TEXTO', 'NUEVO', 'AQUÍ'], direction: 'left', speed: 28 };
+    case 'features': return { type, tag: 'Características', title: '', items: [{ icon: 'star', title: 'Título', text: 'Descripción de la característica.' }] };
+    case 'faq': return { type, tag: 'FAQ', title: 'PREGUNTAS\nFRECUENTES', items: [{ q: '¿Pregunta de ejemplo?', a: 'Respuesta de ejemplo.' }] };
+    case 'gallery': return { type, tag: 'Galería', title: '', view: 'grid', direction: 'left', speed: 40, images: [''] };
+    case 'carousel': return { type, tag: 'Galería', title: '', direction: 'left', speed: 40, items: [{ kind: 'image', url: '', caption: '' }] };
+    case 'buttons': return { type, align: 'center', items: [{ label: 'Botón', href: '#tienda', style: 'solid' }] };
+    case 'banner': return { type, title: 'TÍTULO DEL BANNER', text: 'Descripción del banner.', btnLabel: 'Acción', btnHref: '#tienda' };
+    case 'divider': return { type, style: '1', color: '', thickness: 2 };
+    case 'partners': return { type, tag: 'Partners', title: '', view: 'carousel', direction: 'left', speed: 40, opacity: 0.85, gap: 40, logoSize: 64, items: [{ logo: '', link: '' }] };
+    case 'window': return { type, title: 'Ventana', text: 'Contenido de la ventana...', media: { type: 'image', url: '' } };
+  }
+}
+function mediaField(label, urlVal, bindAttr, video) {
+  const accept = video ? 'video/*' : 'image/*';
+  return `
+    <div class="field">
+      <label>${label}</label>
+      <div class="media-input">
+        <input type="text" ${bindAttr} value="${attr(urlVal)}" placeholder="${video ? 'URL de YouTube, Vimeo o .mp4' : 'Pega una URL o sube un archivo'}">
+        <button class="upload-btn" data-accept="${accept}">⬆ Subir</button>
+      </div>
+      <div class="media-preview"></div>
+      <div class="hint">${video ? 'Acepta enlaces de YouTube/Vimeo o un archivo de vídeo.' : 'Sube imágenes/GIFs pequeños (&lt; 1.5MB) o usa una URL externa.'}</div>
+    </div>`;
+}
+function iconSelect(field, val) {
+  return `<select data-bf="${field}">` + ICON_OPTIONS.map(ic => `<option value="${ic}"${val === ic ? ' selected' : ''}>${ic}</option>`).join('') + `</select>`;
+}
+function blockFields(b) {
+  const f = (n) => `data-bf="${n}"`;
+  switch (b.type) {
+    case 'title': return `
+      <div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div>
+      <div class="field"><label>Título</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
+      <div class="field"><label>Subtítulo</label><textarea ${f('subtitle')}>${attr(b.subtitle)}</textarea></div>`;
+    case 'text': return `<div class="field"><label>Texto</label><textarea ${f('text')} style="min-height:90px">${attr(b.text)}</textarea></div>`;
+    case 'image':
+    case 'gif': return `
+      ${mediaField(b.type === 'gif' ? 'GIF (URL o archivo)' : 'Imagen (URL o archivo)', b.url, f('url'))}
+      <div class="field"><label>Pie de foto (opcional)</label><input type="text" ${f('caption')} value="${attr(b.caption)}"></div>
+      <div class="field"><label>Enlace al hacer clic (opcional)</label><input type="text" ${f('link')} value="${attr(b.link)}"></div>`;
+    case 'video': return `
+      ${mediaField('Vídeo', b.url, f('url'), true)}
+      <div class="field"><label>Pie / descripción (opcional)</label><input type="text" ${f('caption')} value="${attr(b.caption)}"></div>`;
+    case 'embed': return `
+      <div class="field"><label>URL para incrustar (YouTube, Vimeo, Twitch o iframe)</label><input type="text" ${f('url')} value="${attr(b.url)}" placeholder="https://www.youtube.com/watch?v=..."></div>
+      <div class="field"><label>Altura (px)</label><input type="number" min="150" max="900" ${f('height')} value="${attr(b.height)}"></div>
+      <div class="field"><label>Pie / descripción (opcional)</label><input type="text" ${f('caption')} value="${attr(b.caption)}"></div>`;
+    case 'marquee': return `
+      <div class="field-row">
+        <div class="field"><label>Dirección</label><select ${f('direction')}><option value="left"${b.direction === 'left' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option></select></div>
+        <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" ${f('speed')} value="${attr(b.speed)}"></div>
+      </div>
+      <div class="field"><label>Palabras (separadas por comas)</label><input type="text" ${f('words')} value="${attr(Array.isArray(b.words) ? b.words.join(', ') : b.words)}"></div>`;
+    case 'window': return `
+      <div class="field"><label>Título de la ventana</label><input type="text" ${f('title')} value="${attr(b.title)}"></div>
+      <div class="field"><label>Texto</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
+      <div class="field"><label>Tipo de medio</label><select data-bf="media.type"><option value="image"${b.media?.type === 'image' ? ' selected' : ''}>Imagen / GIF</option><option value="video"${b.media?.type === 'video' ? ' selected' : ''}>Vídeo</option></select></div>
+      ${mediaField('Medio de la ventana (opcional)', b.media?.url, 'data-bf="media.url"', b.media?.type === 'video')}`;
+    case 'features': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Item ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field-row"><div class="field" style="max-width:130px"><label>Icono</label>${iconSelect('items.' + j + '.icon', it.icon)}</div><div class="field"><label>Título</label><input type="text" data-bf="items.${j}.title" value="${attr(it.title)}"></div></div>
+        <div class="field"><label>Texto</label><textarea data-bf="items.${j}.text">${attr(it.text)}</textarea></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir item</button>`;
+    case 'faq': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Pregunta ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field"><label>Pregunta</label><input type="text" data-bf="items.${j}.q" value="${attr(it.q)}"></div>
+        <div class="field"><label>Respuesta</label><textarea data-bf="items.${j}.a">${attr(it.a)}</textarea></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir pregunta</button>`;
+    case 'gallery': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      <div class="field-row"><div class="field"><label>Vista</label><select ${f('view')}><option value="grid"${b.view !== 'carousel' ? ' selected' : ''}>Cuadrícula</option><option value="carousel"${b.view === 'carousel' ? ' selected' : ''}>Carrusel</option></select></div><div class="field"><label>Dirección (carrusel)</label><select ${f('direction')}><option value="left"${b.direction !== 'right' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option></select></div><div class="field" style="max-width:110px"><label>Velocidad</label><input type="number" ${f('speed')} value="${attr(b.speed)}"></div></div>
+      ${(b.images || []).map((u, j) => `<div class="subcard"><div class="subhead"><span>Imagen ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="images">✕</button></div>${mediaField('Imagen', u, 'data-bf="images.' + j + '"')}</div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir imagen</button>`;
+    case 'carousel': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      <div class="field-row"><div class="field"><label>Dirección</label><select ${f('direction')}><option value="left"${b.direction === 'left' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option><option value="static"${b.direction === 'static' ? ' selected' : ''}>⏸️ Estático</option></select></div><div class="field"><label>Velocidad</label><input type="number" ${f('speed')} value="${attr(b.speed)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Slide ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field"><label>Tipo</label><select data-bf="items.${j}.kind"><option value="image"${it.kind === 'image' ? ' selected' : ''}>Imagen</option><option value="video"${it.kind === 'video' ? ' selected' : ''}>Vídeo/Embed</option></select></div>
+        ${mediaField('Medio', it.url, 'data-bf="items.' + j + '.url"', it.kind === 'video')}
+        <div class="field"><label>Texto (opcional)</label><input type="text" data-bf="items.${j}.caption" value="${attr(it.caption)}"></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir slide</button>`;
+    case 'buttons': return `
+      <div class="field"><label>Alineación</label><select ${f('align')}><option value="center"${b.align === 'center' ? ' selected' : ''}>Centro</option><option value="flex-start"${b.align === 'flex-start' ? ' selected' : ''}>Izquierda</option><option value="flex-end"${b.align === 'flex-end' ? ' selected' : ''}>Derecha</option></select></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Botón ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field"><label>Texto</label><input type="text" data-bf="items.${j}.label" value="${attr(it.label)}"></div>
+        <div class="field"><label>Enlace</label><input type="text" data-bf="items.${j}.href" value="${attr(it.href)}"></div>
+        <div class="field"><label>Estilo</label><select data-bf="items.${j}.style"><option value="solid"${it.style === 'solid' ? ' selected' : ''}>Sólido</option><option value="ghost"${it.style === 'ghost' ? ' selected' : ''}>Contorno</option><option value="discord"${it.style === 'discord' ? ' selected' : ''}>Discord</option></select></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir botón</button>`;
+    case 'banner': return `
+      <div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div>
+      <div class="field"><label>Texto</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
+      <div class="field-row"><div class="field"><label>Botón texto</label><input type="text" ${f('btnLabel')} value="${attr(b.btnLabel)}"></div><div class="field"><label>Botón enlace</label><input type="text" ${f('btnHref')} value="${attr(b.btnHref)}"></div></div>`;
+    case 'divider': return `
+      <div class="field-row"><div class="field"><label>Estilo</label><select ${f('style')}>${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}"${String(b.style) === String(n) ? ' selected' : ''}>${n <= 5 ? 'Estático ' + n : 'Animado ' + (n - 5)}</option>`).join('')}</select></div><div class="field" style="max-width:120px"><label>Grosor (px)</label><input type="number" min="1" max="14" ${f('thickness')} value="${attr(b.thickness)}"></div></div>
+      <div class="field"><label>Color</label><div class="color-row"><input type="color" data-bf="color" value="${attr(b.color || '#9333EA')}"><input type="text" ${f('color')} value="${attr(b.color)}" placeholder="vacío = color principal" style="flex:1"></div></div>
+      <div class="hint">5 estáticos y 5 animados. Cubren de lado a lado con bordes difuminados.</div>`;
+    case 'partners': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      <div class="field-row"><div class="field"><label>Vista</label><select ${f('view')}><option value="carousel"${b.view !== 'grid' ? ' selected' : ''}>Carrusel</option><option value="grid"${b.view === 'grid' ? ' selected' : ''}>Cuadrícula</option></select></div><div class="field"><label>Dirección</label><select ${f('direction')}><option value="left"${b.direction !== 'right' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option></select></div></div>
+      <div class="field-row"><div class="field"><label>Velocidad</label><input type="number" ${f('speed')} value="${attr(b.speed)}"></div><div class="field"><label>Separación (px)</label><input type="number" ${f('gap')} value="${attr(b.gap)}"></div><div class="field"><label>Tamaño logo (px)</label><input type="number" min="20" max="160" ${f('logoSize')} value="${attr(b.logoSize)}"></div><div class="field"><label>Transparencia</label><input type="number" min="0.1" max="1" step="0.1" ${f('opacity')} value="${attr(b.opacity)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Logo ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>${mediaField('Logo', it.logo, 'data-bf="items.' + j + '.logo"')}<div class="field"><label>Enlace al hacer clic (opcional)</label><input type="text" data-bf="items.${j}.link" value="${attr(it.link)}" placeholder="https://..."></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir logo</button>`;
+  }
+}
+function renderBlocks() {
+  const wrap = document.getElementById('blocksList');
+  if (!config.blocks.length) { wrap.innerHTML = `<div class="empty">Aún no hay bloques. Añade contenido con los botones de arriba. El <strong>orden y la visibilidad</strong> se controlan abajo en "Orden y visibilidad de secciones".</div>`; return; }
+  wrap.innerHTML = config.blocks.map((b, i) => `
+    <div class="card" data-bi="${i}">
+      <div class="card-head"><span class="ctype"><span class="badge">${BLOCK_LABELS[b.type] || b.type}</span> Bloque ${i + 1}</span>
+        <div class="c-actions"><button class="del" data-bdel title="Eliminar">✕</button></div></div>
+      <div class="card-body">${blockFields(b)}</div>
+    </div>`).join('');
+  wrap.querySelectorAll('.media-input input').forEach(refreshMediaPreview);
+}
+const blocksList = document.getElementById('blocksList');
+blocksList.addEventListener('input', e => {
+  const f = e.target.dataset.bf; if (f === undefined) return;
+  const i = +e.target.closest('[data-bi]').dataset.bi;
+  setPath(config.blocks[i], f, e.target.value);
+  pushPreview();
+});
+blocksList.addEventListener('change', e => {
+  const f = e.target.dataset.bf; if (f === undefined) return;
+  const i = +e.target.closest('[data-bi]').dataset.bi;
+  setPath(config.blocks[i], f, e.target.value);
+  if (f === 'media.type' || f.endsWith('.kind')) renderBlocks();
+  pushPreview();
+});
+function addSubItem(b) {
+  if (b.type === 'gallery') { (b.images = b.images || []).push(''); return; }
+  b.items = b.items || [];
+  if (b.type === 'faq') b.items.push({ q: '¿Pregunta?', a: 'Respuesta.' });
+  else if (b.type === 'buttons') b.items.push({ label: 'Botón', href: '#', style: 'solid' });
+  else if (b.type === 'carousel') b.items.push({ kind: 'image', url: '', caption: '' });
+  else if (b.type === 'partners') b.items.push({ logo: '', link: '' });
+  else b.items.push({ icon: 'star', title: 'Título', text: 'Descripción' });
+}
+blocksList.addEventListener('click', e => {
+  const card = e.target.closest('[data-bi]'); if (!card) return;
+  const i = +card.dataset.bi;
+  if (e.target.dataset.bdel !== undefined) { config.blocks.splice(i, 1); migrateLayout(config); renderBlocks(); renderLayout(); pushPreview(); return; }
+  if (e.target.dataset.delitem !== undefined) { const arr = e.target.dataset.arr || 'items'; (config.blocks[i][arr] || []).splice(+e.target.dataset.delitem, 1); renderBlocks(); pushPreview(); return; }
+  if (e.target.dataset.additem !== undefined) { addSubItem(config.blocks[i]); renderBlocks(); pushPreview(); return; }
+});
+document.querySelectorAll('[data-add]').forEach(btn => btn.addEventListener('click', () => {
+  config.blocks.push(newBlock(btn.dataset.add)); migrateLayout(config); renderBlocks(); renderLayout(); pushPreview();
+  blocksList.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}));
+
+// DRAG REORDER (blocks + layout)
+function enableDragReorder(container, getArr, rerender) {
+  let dragIdx = null;
+  container.addEventListener('dragstart', e => {
+    const h = e.target.closest('.drag-handle'); if (!h) return;
+    const row = h.closest('[data-drag]'); if (!row) return;
+    dragIdx = +row.dataset.drag; row.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', String(dragIdx)); } catch (err) {}
+  });
+  container.addEventListener('dragend', () => { container.querySelectorAll('.dragging,.drop-target').forEach(x => x.classList.remove('dragging', 'drop-target')); dragIdx = null; });
+  container.addEventListener('dragover', e => {
+    e.preventDefault();
+    const row = e.target.closest('[data-drag]');
+    container.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
+    if (row && dragIdx != null) row.classList.add('drop-target');
+  });
+  container.addEventListener('drop', e => {
+    e.preventDefault();
+    const row = e.target.closest('[data-drag]'); if (!row || dragIdx == null) return;
+    const tgt = +row.dataset.drag; if (tgt === dragIdx) return;
+    const arr = getArr(); const [m] = arr.splice(dragIdx, 1); arr.splice(tgt, 0, m);
+    dragIdx = null; rerender(); pushPreview();
+  });
+}
+enableDragReorder(document.getElementById('layoutList'), () => config.layout.order, renderLayout);
+
+// ─────────────────────────────────────────────
+// LAYOUT MANAGER
+// ─────────────────────────────────────────────
+function renderLayout() {
+  const wrap = document.getElementById('layoutList');
+  wrap.innerHTML = config.layout.order.map((key, i) => `
+    <div class="lay-row" data-li="${i}" data-drag="${i}">
+      <span class="drag-handle" draggable="true" title="Arrastrar">⠿</span>
+      <div class="c-actions"><button data-lmove="-1">▲</button><button data-lmove="1">▼</button></div>
+      <span class="lay-name">${labelFor(key)}</span>
+      <label class="lay-vis"><input type="checkbox" data-lvis ${config.layout.visible[key] !== false ? 'checked' : ''}> Visible</label>
+    </div>`).join('');
+}
+document.getElementById('layoutList').addEventListener('click', e => {
+  const row = e.target.closest('[data-li]'); if (!row) return;
+  const i = +row.dataset.li;
+  if (e.target.dataset.lmove !== undefined) {
+    const j = i + (+e.target.dataset.lmove); if (j < 0 || j >= config.layout.order.length) return;
+    [config.layout.order[i], config.layout.order[j]] = [config.layout.order[j], config.layout.order[i]];
+    renderLayout(); pushPreview();
+  }
+});
+document.getElementById('layoutList').addEventListener('change', e => {
+  if (e.target.dataset.lvis === undefined) return;
+  const i = +e.target.closest('[data-li]').dataset.li;
+  const key = config.layout.order[i];
+  config.layout.visible[key] = e.target.checked;
+  pushPreview();
+});
+
+// ─────────────────────────────────────────────
+// ACCORDION / DEVICE / TOOLBAR
+// ─────────────────────────────────────────────
+document.querySelectorAll('.section-head').forEach(h => h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed')));
+document.querySelectorAll('.vp-btn[data-vp]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.vp-btn[data-vp]').forEach(x => x.classList.remove('active')); b.classList.add('active');
+  if (b.dataset.vp === 'mobile') { previewFrame.style.maxWidth = '420px'; previewFrame.style.margin = '0 auto'; }
+  else { previewFrame.style.maxWidth = ''; previewFrame.style.margin = ''; }
+}));
+document.getElementById('vpReload').addEventListener('click', () => previewFrame.contentWindow.location.reload());
+
+document.getElementById('btnExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'config.json'; a.click(); URL.revokeObjectURL(a.href);
+  toast('config.json descargado ✓', 'success');
+});
+document.getElementById('btnImport').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', async e => {
+  const file = e.target.files[0]; if (!file) return;
+  try { config = mergeConfig(JSON.parse(await file.text())); initUI(); pushPreview(); toast('Configuración importada ✓', 'success'); }
+  catch (err) { toast('Archivo JSON inválido', 'error'); }
+  e.target.value = '';
+});
+document.getElementById('btnReset').addEventListener('click', () => {
+  if (!confirm('¿Restaurar todo a los valores por defecto? Perderás los cambios no publicados.')) return;
+  config = deepClone(DEFAULT_CONFIG); initUI(); pushPreview(); toast('Restaurado a valores por defecto', 'success');
+});
+document.getElementById('btnOpenSite').addEventListener('click', () => window.open('index.html', '_blank'));
+
+// ─────────────────────────────────────────────
+// PUBLISH
+// ─────────────────────────────────────────────
+const publishModal = document.getElementById('publishModal');
+document.getElementById('btnPublish').addEventListener('click', () => {
+  const saved = localStorage.getItem('xkt_gh_token');
+  if (saved) { document.getElementById('ghToken').value = saved; document.getElementById('ghRemember').checked = true; }
+  publishModal.classList.add('open');
+});
+document.getElementById('publishCancel').addEventListener('click', () => publishModal.classList.remove('open'));
+publishModal.addEventListener('click', e => { if (e.target === publishModal) publishModal.classList.remove('open'); });
+document.getElementById('publishConfirm').addEventListener('click', async () => {
+  const owner = document.getElementById('ghOwner').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  const token = document.getElementById('ghToken').value.trim();
+  if (!owner || !repo || !token) { toast('Completa owner, repositorio y token', 'error'); return; }
+  if (document.getElementById('ghRemember').checked) localStorage.setItem('xkt_gh_token', token); else localStorage.removeItem('xkt_gh_token');
+  const btn = document.getElementById('publishConfirm'); btn.disabled = true; btn.textContent = 'Publicando...';
+  const api = `https://api.github.com/repos/${owner}/${repo}/contents/config.json`;
+  const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
+  try {
+    let sha = null;
+    const getRes = await fetch(`${api}?ref=${encodeURIComponent(branch)}`, { headers });
+    if (getRes.ok) sha = (await getRes.json()).sha;
+    else if (getRes.status !== 404) throw new Error('No se pudo acceder al repo (¿token o permisos?)');
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+    const putRes = await fetch(api, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'Actualizar config.json desde el panel XKT', content, sha: sha || undefined, branch }) });
+    if (!putRes.ok) { const err = await putRes.json().catch(() => ({})); throw new Error(err.message || 'Error ' + putRes.status); }
+    publishModal.classList.remove('open');
+    toast('¡Publicado! El sitio se actualizará en 1-2 min.', 'success');
+  } catch (err) { toast('Error al publicar: ' + err.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Publicar ahora'; }
+});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function mergeConfig(loaded) {
+  const c = Object.assign(deepClone(DEFAULT_CONFIG), loaded || {});
+  c.branding = Object.assign({}, DEFAULT_CONFIG.branding, c.branding);
+  c.theme = Object.assign({}, DEFAULT_CONFIG.theme, c.theme);
+  c.background = Object.assign({}, DEFAULT_CONFIG.background, c.background);
+  c.hero = Object.assign({}, DEFAULT_CONFIG.hero, c.hero);
+  c.heroTicker = Object.assign({}, DEFAULT_CONFIG.heroTicker, c.heroTicker);
+  c.music = Object.assign({}, DEFAULT_CONFIG.music, c.music);
+  if (!Array.isArray(c.music.tracks)) c.music.tracks = [];
+  c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
+  c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
+  c.store = Object.assign({}, DEFAULT_CONFIG.store, c.store);
+  c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
+  c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
+  c.discordFeed = Object.assign({}, DEFAULT_CONFIG.discordFeed, c.discordFeed);
+  if (!Array.isArray(c.discordFeed.channels)) c.discordFeed.channels = [];
+  c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
+  c.layout = Object.assign({}, DEFAULT_CONFIG.layout, c.layout);
+  c.layout.visible = Object.assign({}, c.layout.visible);
+  if (Array.isArray(c.marquee)) c.marquee = { words: c.marquee, direction: 'left', speed: 32 };
+  c.marquee = Object.assign({}, DEFAULT_CONFIG.marquee, c.marquee);
+  if (!Array.isArray(c.marquee.words) || !c.marquee.words.length) c.marquee.words = DEFAULT_CONFIG.marquee.words.slice();
+  if (!Array.isArray(c.heroTicker.items)) c.heroTicker.items = DEFAULT_CONFIG.heroTicker.items.slice();
+  if (!Array.isArray(c.stats)) c.stats = deepClone(DEFAULT_CONFIG.stats);
+  if (!Array.isArray(c.trust)) c.trust = deepClone(DEFAULT_CONFIG.trust);
+  if (!c.reviews.items || !Array.isArray(c.reviews.items)) c.reviews.items = deepClone(DEFAULT_CONFIG.reviews.items);
+  if (!Array.isArray(c.layout.order)) c.layout.order = [];
+  if (!Array.isArray(c.blocks)) c.blocks = [];
+  migrateLayout(c);
+  return c;
+}
+function initUI() {
+  fillStaticInputs();
+  renderStats(); renderTrust(); renderTicker(); renderMusic(); renderReviews(); renderDiscordChannels(); renderMarquee(); renderBlocks(); renderLayout();
+}
+async function loadInitialConfig() {
+  try { const d = localStorage.getItem(DRAFT_KEY); if (d) return JSON.parse(d); } catch (e) {}
+  try { const r = await fetch('config.json', { cache: 'no-store' }); if (r.ok) return await r.json(); } catch (e) {}
+  return deepClone(DEFAULT_CONFIG);
+}
+
+// add-buttons for list editors
+document.getElementById('addStat').addEventListener('click', () => { config.stats.push({ target: 0, decimal: '', suffix: '', label: 'Nueva' }); renderStats(); pushPreview(); });
+document.getElementById('addTrust').addEventListener('click', () => { config.trust.push({ icon: '⭐', name: 'Nueva ventaja', desc: 'Descripción...' }); renderTrust(); pushPreview(); });
+document.getElementById('addReview').addEventListener('click', () => { config.reviews.items.push({ stars: 5, text: 'Nueva reseña...', avatar: 'XX', name: 'Usuario', role: 'Cliente' }); renderReviews(); pushPreview(); });
+document.getElementById('addMarquee').addEventListener('click', () => { config.marquee.words.push('NUEVO'); renderMarquee(); pushPreview(); });
+document.getElementById('addTicker').addEventListener('click', () => { config.heroTicker.items.push('NUEVO'); renderTicker(); pushPreview(); });
+
+// wire list handlers once
+listHandlers('statsList', 'stats', renderStats);
+listHandlers('trustList', 'trust', renderTrust);
+listHandlers('reviewsList', 'reviews', renderReviews);
+// reviews items live in config.reviews.items, not config.reviews — patch handler:
+(function () {
+  const wrap = document.getElementById('reviewsList');
+  wrap.replaceWith(wrap.cloneNode(true)); // clear previous listeners from generic
+  const fresh = document.getElementById('reviewsList');
+  fresh.addEventListener('input', e => {
+    const f = e.target.dataset.f; if (f === undefined) return;
+    const i = +e.target.closest('[data-i]').dataset.i;
+    config.reviews.items[i][f] = e.target.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value;
+    pushPreview();
+  });
+  fresh.addEventListener('click', e => {
+    const card = e.target.closest('[data-i]'); if (!card) return;
+    const i = +card.dataset.i;
+    if (e.target.dataset.del !== undefined) { config.reviews.items.splice(i, 1); renderReviews(); pushPreview(); }
+    else if (e.target.dataset.move !== undefined) {
+      const j = i + (+e.target.dataset.move); if (j < 0 || j >= config.reviews.items.length) return;
+      [config.reviews.items[i], config.reviews.items[j]] = [config.reviews.items[j], config.reviews.items[i]]; renderReviews(); pushPreview();
+    }
+  });
+})();
+listHandlers('marqueeList', 'marquee', renderMarquee);
+listHandlers('tickerList', 'ticker', renderTicker);
+
+async function start() {
+  config = mergeConfig(await loadInitialConfig());
+  bindStaticInputs();
+  initUI();
+  try { localStorage.setItem(PREVIEW_KEY, JSON.stringify(config)); } catch (e) {}
+  previewFrame.addEventListener('load', () => pushPreview());
+  pushPreview();
+}
+</script>
+</body>
+</html>

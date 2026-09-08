@@ -1,0 +1,214 @@
+"""Copia los ultimos mensajes de los canales del panel a discord/feed.json.
+
+Lee los canales de config.json -> discordFeed.channels [{id, label}].
+Requiere el secreto DISCORD_BOT_TOKEN (token de un bot dentro del servidor
+con permiso de Ver canal + Leer historial; activa los intents privilegiados).
+Sin secreto: avisa y no falla (para no ensuciar el historial de Actions).
+"""
+import datetime
+import json
+import os
+import re
+import sys
+import urllib.request
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+LIMIT = 20
+
+# La web es publica: censurar secretos antes de guardarlos en feed.json.
+REDACT_PATTERNS = [
+    r"github_pat_[A-Za-z0-9_]+",
+    r"gh[pousr]_[A-Za-z0-9]+",
+    r"mfa\.[A-Za-z0-9_\-]+",
+    r"[A-Za-z0-9_\-]{24}\.[A-Za-z0-9_\-]{6}\.[A-Za-z0-9_\-]{27,}",
+    r"discord(?:app)?\.com/api/webhooks/\d+/[\w\-]+",
+    r"sk-[A-Za-z0-9]{20,}",
+]
+
+
+def redact_secrets(text):
+    for pattern in REDACT_PATTERNS:
+        text = re.sub(pattern, "[secreto oculto]", text)
+    return text
+
+
+def fetch_messages(channel_id, token):
+    req = urllib.request.Request(
+        f"https://discord.com/api/v10/channels/{channel_id}/messages?limit={LIMIT}",
+        headers={
+            "Authorization": f"Bot {token}",
+            "User-Agent": "XKT-Feed/1.0",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=20) as res:
+        return json.load(res)
+
+
+def clean_message(m):
+    author = m.get("author", {}) or {}
+    uid = author.get("id")
+    avatar_hash = author.get("avatar")
+    avatar = (
+        f"https://cdn.discordapp.com/avatars/{uid}/{avatar_hash}.png?size=80"
+        if uid and avatar_hash
+        else ""
+    )
+    images = [
+        a["url"]
+        for a in (m.get("attachments") or [])
+        if str(a.get("content_type") or "").startswith("image/") and a.get("url")
+    ]
+    audios = [
+        a["url"]
+        for a in (m.get("attachments") or [])
+        if str(a.get("content_type") or "").startswith("audio/") and a.get("url")
+    ]
+    texts = []
+    base = (m.get("content") or "").strip()
+    if base:
+        texts.append(base)
+    # Stickers aislados (sin texto ni adjuntos).
+    for sticker in (m.get("sticker_items") or []):
+        if sticker.get("name"):
+            texts.append(f"[Sticker: {sticker['name']}]")
+    # Encuestas.
+    poll = m.get("poll") or {}
+    question = (poll.get("question") or {}).get("text")
+    if question:
+        texts.append(f"Encuesta: {question}")
+    for answer in poll.get("answers") or []:
+        option = (answer.get("poll_media") or {}).get("text")
+        if option:
+            texts.append(f"- {option}")
+    # Los anuncios suelen venir solo como embeds: rescatar texto, campos e imagenes.
+    for e in (m.get("embeds") or []):
+        for key in ("title", "description"):
+            if e.get(key):
+                texts.append(str(e[key]))
+        for field in (e.get("fields") or []):
+            name = str(field.get("name") or "").strip()
+            value = str(field.get("value") or "").strip()
+            if name or value:
+                texts.append(f"{name}: {value}".strip())
+        for media in (e.get("thumbnail") or {}, e.get("image") or {}):
+            if media.get("url"):
+                images.append(media["url"])
+    content = "\n\n".join(texts).strip()
+    content = redact_secrets(content)
+    return {
+        "id": m.get("id"),
+        "author": author.get("global_name") or author.get("username") or "?",
+        "avatar": avatar,
+        "bot": bool(author.get("bot")),
+        "content": content,
+        "timestamp": m.get("timestamp"),
+        "images": images[:4],
+        "audios": audios[:2],
+    }
+
+
+def main():
+    token = os.environ.get("DISCORD_BOT_TOKEN", "").strip()
+    if not token:
+        print("NOTICE: falta el secreto DISCORD_BOT_TOKEN; omito la sincronizacion.")
+        return 0
+
+    with open(os.path.join(ROOT, "config.json"), encoding="utf-8") as f:
+        config = json.load(f)
+
+    channels = [
+        c
+        for c in (config.get("discordFeed", {}).get("channels", []) or [])
+        if str(c.get("id", "")).strip()
+    ]
+
+    out = {
+        "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "channels": [],
+    }
+    for ch in channels:
+        cid = str(ch["id"]).strip()
+        try:
+            messages = fetch_messages(cid, token)
+        except Exception as err:  # noqa: BLE001 - seguimos con los demas canales
+            print(f"WARN canal {cid}: {err}")
+            continue
+        cleaned = [clean_message(m) for m in messages]
+        cleaned = [
+            m
+            for m in cleaned
+            if m["content"].strip() or m["images"] or m["audios"]
+        ]
+        print(f"canal {cid}: {len(messages)} recibidos, {len(cleaned)} validos")
+        if messages and not cleaned:
+            from collections import Counter
+
+            shapes = Counter()
+            for m in messages:
+                parts = [f"type={m.get('type')}"]
+                if (m.get("content") or "").strip():
+                    parts.append("texto")
+                if m.get("attachments"):
+                    parts.append(
+                        "adj="
+                        + str(
+                            [
+                                (a.get("filename"), a.get("content_type"))
+                                for a in m["attachments"]
+                            ]
+                        )
+                    )
+                if m.get("sticker_items"):
+                    parts.append("stickers")
+                if m.get("poll"):
+                    parts.append("poll")
+                for e in m.get("embeds") or []:
+                    keys = [
+                        k
+                        for k in (
+                            "title",
+                            "description",
+                            "fields",
+                            "image",
+                            "thumbnail",
+                            "author",
+                            "footer",
+                            "url",
+                        )
+                        if e.get(k)
+                    ]
+                    parts.append("embed:" + (",".join(keys) or "vacio"))
+                if m.get("flags"):
+                    parts.append(f"flags={m['flags']}")
+                shapes["|".join(parts)] += 1
+            for shape, count in list(shapes.most_common(10)):
+                print(f"  forma x{count}: {shape}")
+        out["channels"].append(
+            {"id": cid, "label": ch.get("label") or "Canal", "messages": cleaned}
+        )
+
+    feed_path = os.path.join(ROOT, "discord", "feed.json")
+    os.makedirs(os.path.dirname(feed_path), exist_ok=True)
+    previous = None
+    if os.path.exists(feed_path):
+        with open(feed_path, encoding="utf-8") as f:
+            try:
+                previous = json.load(f)
+            except json.JSONDecodeError:
+                previous = None
+
+    prev_channels = (previous or {}).get("channels")
+    if prev_channels == out["channels"]:
+        print("Sin cambios en el feed.")
+        return 0
+
+    with open(feed_path, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    total = sum(len(c["messages"]) for c in out["channels"])
+    print(f"Feed actualizado: {len(out['channels'])} canales, {total} mensajes.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,253 @@
+{
+  "branding": {
+    "logoText": "XKT SAVAGE",
+    "accentIndex": 0,
+    "logoImage": "img/logo.png",
+    "primaryColor": "#9333EA",
+    "discordUrl": "https://discord.gg/RNVxxAU9Nv",
+    "navCtaLabel": "Ver Scripts",
+    "navCtaHref": "#tienda"
+  },
+  "theme": {
+    "textColor": "#F2F2F4",
+    "mutedColor": "#8a8a93",
+    "headingColor": "#ffffff",
+    "iconColor": "#9333EA",
+    "headingAlign": "left",
+    "fontDisplay": "Bebas Neue",
+    "fontHead": "Barlow Condensed",
+    "fontBody": "Barlow",
+    "buttonStyle": "slant"
+  },
+  "background": {
+    "color": "#0a0a0c",
+    "image": "img/fondo.png",
+    "opacity": 0.25,
+    "overlay": 0.5,
+    "showOrbs": true,
+    "showGrid": true
+  },
+  "hero": {
+    "tag": "Scripts FiveM Premium",
+    "showTag": false,
+    "title": "XKT",
+    "titleAccentIndex": 0,
+    "titleOutline": "SAVAGE",
+    "titleColor": "#ffffff",
+    "outlineColor": "",
+    "outlineWidth": 2,
+    "align": "left",
+    "parallax": false,
+    "titleImage": "img/titulo.png",
+    "titleImageSize": 900,
+    "subtitle": "Scripts de calidad para servidores serios — Sin escrow. Código abierto.",
+    "primaryBtnLabel": "Ver Catálogo →",
+    "primaryBtnHref": "#tienda",
+    "ghostBtnLabel": "Únete al Discord",
+    "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv",
+    "bgImage": "img/hero.png"
+  },
+  "heroTicker": {
+    "show": true,
+    "position": "bottom",
+    "direction": "left",
+    "speed": 28,
+    "opacity": 1,
+    "height": 40,
+    "bgColor": "",
+    "textColor": "#ffffff",
+    "items": [
+      "Sin Escrow",
+      "Soporte 24/7",
+      "Updates Gratis",
+      "Entrega Inmediata",
+      "Código Abierto",
+      "ESX · QBCore · QBox"
+    ]
+  },
+  "music": {
+    "enabled": false,
+    "autoplay": false,
+    "position": "pos-br",
+    "color": "#9333EA",
+    "title": "Lofi XKT",
+    "url": "",
+    "tracks": []
+  },
+  "stats": [
+    {
+      "target": 12,
+      "decimal": "",
+      "suffix": "K+",
+      "label": "Clientes"
+    },
+    {
+      "target": 50,
+      "decimal": "",
+      "suffix": "+",
+      "label": "Scripts"
+    },
+    {
+      "target": 4,
+      "decimal": "9",
+      "suffix": "",
+      "label": "Rating"
+    },
+    {
+      "target": 24,
+      "decimal": "",
+      "suffix": "/7",
+      "label": "Soporte"
+    }
+  ],
+  "trust": [
+    {
+      "icon": "unlock",
+      "name": "Sin Escrow",
+      "desc": "Código 100% abierto. Sin bloqueos ni dependencias ocultas."
+    },
+    {
+      "icon": "refresh",
+      "name": "Updates Gratis",
+      "desc": "Actualizaciones de por vida incluidas en cada compra."
+    },
+    {
+      "icon": "chat",
+      "name": "Soporte 24/7",
+      "desc": "Equipo disponible en Discord en todo momento."
+    },
+    {
+      "icon": "bolt",
+      "name": "Entrega Inmediata",
+      "desc": "Descarga automática al completar el pago."
+    }
+  ],
+  "marquee": {
+    "words": [
+      "FiveM",
+      "Scripts",
+      "XKT",
+      "Premium"
+    ],
+    "direction": "left",
+    "speed": 32
+  },
+  "scriptsHeading": {
+    "tag": "Catálogo",
+    "title": "NUESTROS\nSCRIPTS",
+    "desc": "Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas."
+  },
+  "scriptsLayout": {
+    "mode": "grid",
+    "direction": "left",
+    "speed": 45
+  },
+  "store": {
+    "cardSize": "normal",
+    "priceTagShape": "slant",
+    "thumbStyle": "frame",
+    "productBgDark": 0.82
+  },
+  "reviews": {
+    "tag": "Lo que dicen",
+    "title": "REVIEWS\nREALES",
+    "view": "grid",
+    "direction": "left",
+    "speed": 40,
+    "items": [
+      {
+        "stars": 5,
+        "text": "El Gang System de XKT transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.",
+        "avatar": "MR",
+        "name": "MadRoller_RP",
+        "role": "Owner · Servidor 200+ slots"
+      },
+      {
+        "stars": 5,
+        "text": "Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.",
+        "avatar": "KX",
+        "name": "KxiloDev",
+        "role": "Developer · Script Tester"
+      },
+      {
+        "stars": 5,
+        "text": "Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.",
+        "avatar": "NG",
+        "name": "NightGang_ES",
+        "role": "Admin · FiveM Server"
+      },
+      {
+        "stars": 4,
+        "text": "Llevo usando scripts de XKT desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.",
+        "avatar": "ZR",
+        "name": "ZeRoFault",
+        "role": "Community Manager"
+      }
+    ]
+  },
+  "cta": {
+    "tag": "Comunidad",
+    "title": "ÚNETE A NUESTRA |FAMILIA",
+    "desc": "+12.000 admins, devs y owners ya forman parte de la comunidad XKT. Soporte, novedades y drops exclusivos te esperan dentro.",
+    "btnLabel": "Entrar al Discord",
+    "btn2Label": "",
+    "btn2Href": "",
+    "membersText": "",
+    "image": "",
+    "bgColor": "",
+    "overlay": 0.85,
+    "align": "left"
+  },
+  "discordFeed": {
+    "tag": "En vivo",
+    "title": "DISCORD\nEN VIVO",
+    "desc": "Publicaciones.",
+    "serverId": "1535427242686152764",
+    "channels": [
+      {
+        "label": "Canal",
+        "id": "1546992737864392704"
+      }
+    ]
+  },
+  "extrasHeading": {
+    "tag": "Novedades",
+    "title": "CONTENIDO\nEXTRA"
+  },
+  "layout": {
+    "order": [
+      "trust",
+      "marquee",
+      "tienda",
+      "probador",
+      "reviews",
+      "discord",
+      "cta",
+      "b:bowvdzg6"
+    ],
+    "visible": {
+      "trust": true,
+      "marquee": true,
+      "tienda": false,
+      "probador": true,
+      "reviews": false,
+      "discord": true,
+      "cta": true,
+      "b:bowvdzg6": true
+    }
+  },
+  "blocks": [
+    {
+      "type": "image",
+      "url": "",
+      "caption": "",
+      "link": "",
+      "id": "bowvdzg6"
+    }
+  ],
+  "probador": {
+    "tag": "Probador 3D",
+    "title": "CATALOGO\n3D",
+    "desc": ""
+  }
+}
