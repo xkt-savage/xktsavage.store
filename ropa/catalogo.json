@@ -8,5 +8,25 @@
     "ydd": "",
     "ytd": "",
     "precio": ""
+  },
+  {
+    "id": "pants",
+    "categoria": "Pantalones",
+    "descripcion": "",
+    "glb": "ropa/Pants.glb",
+    "thumb": "",
+    "ydd": "",
+    "ytd": "",
+    "precio": ""
+  },
+  {
+    "id": "vendasbrazo",
+    "categoria": "Accesorios",
+    "descripcion": "",
+    "glb": "ropa/vendasbrazo.glb",
+    "thumb": "",
+    "ydd": "",
+    "ytd": "",
+    "precio": ""
   }
 ]
