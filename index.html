@@ -1719,14 +1719,20 @@ function nombreDesdeGlb(glb) {
   catch (e) { return base.replace(/[_-]+/g, ' ').trim(); }
 }
 function nombrePrenda(p) { return p.nombre || nombreDesdeGlb(p.glb) || p.id; }
-function forceOpaqueMaterials(mv) {
+// Materiales: las conversiones YDD->GLB traen alphaMode BLEND (transparentes) y
+// rugosidades distintas (unas brillan). Se fuerza opaco + acabado mate uniforme.
+function applyRopaMaterialFix(mv) {
   try {
     (mv.model && mv.model.materials ? mv.model.materials : []).forEach(m => {
       if (m.setAlphaMode) m.setAlphaMode('OPAQUE');
       const pbr = m.pbrMetallicRoughness;
-      if (pbr && pbr.setBaseColorFactor) {
-        const f = pbr.baseColorFactor || [1, 1, 1, 1];
-        pbr.setBaseColorFactor([f[0], f[1], f[2], 1]);
+      if (pbr) {
+        if (pbr.setRoughnessFactor) pbr.setRoughnessFactor(1);
+        if (pbr.setMetallicFactor) pbr.setMetallicFactor(0);
+        if (pbr.setBaseColorFactor) {
+          const f = pbr.baseColorFactor || [1, 1, 1, 1];
+          pbr.setBaseColorFactor([f[0], f[1], f[2], 1]);
+        }
       }
     });
   } catch (e) {}
@@ -1814,7 +1820,7 @@ function renderRopaGrid(filterCat) {
     }
   });
   grid.querySelectorAll('model-viewer.ropa-card-viewer').forEach(mv => {
-    mv.addEventListener('load', () => forceOpaqueMaterials(mv), { once: true });
+    mv.addEventListener('load', () => applyRopaMaterialFix(mv), { once: true });
   });
 }
 
@@ -1833,7 +1839,7 @@ function openRopaModal(id) {
     const mv = viewer.querySelector('model-viewer');
     if (mv) {
       mv.addEventListener('error', () => { const n = document.getElementById('ropaLoadNote'); if (n) n.style.display = ''; }, { once: true });
-      mv.addEventListener('load', () => forceOpaqueMaterials(mv), { once: true });
+      mv.addEventListener('load', () => applyRopaMaterialFix(mv), { once: true });
     }
   } else {
     viewer.innerHTML = `<div class="error-state"><div class="error-icon">👕</div><p>Esta prenda aún no tiene .glb. Conviértela desde YDD+YTD y súbela a ropa/</p></div>`;
