@@ -5,8 +5,8 @@
     "logoImage": "img/logo.png",
     "primaryColor": "#9333EA",
     "discordUrl": "https://discord.gg/RNVxxAU9Nv",
-    "navCtaLabel": "Ver Scripts",
-    "navCtaHref": "#tienda"
+    "navCtaLabel": "Ver Catálogo",
+    "navCtaHref": "#probador"
   },
   "theme": {
     "textColor": "#F2F2F4",
@@ -28,8 +28,8 @@
     "showGrid": true
   },
   "hero": {
-    "tag": "Scripts FiveM Premium",
-    "showTag": false,
+    "tag": "Ropa · Props · Custom",
+    "showTag": true,
     "title": "XKT",
     "titleAccentIndex": 0,
     "titleOutline": "SAVAGE",
@@ -40,9 +40,9 @@
     "parallax": false,
     "titleImage": "img/titulo.png",
     "titleImageSize": 900,
-    "subtitle": "Scripts de calidad para servidores serios — Sin escrow. Código abierto.",
+    "subtitle": "Prendas y props de calidad para servidores serios — Diseños exclusivos.",
     "primaryBtnLabel": "Ver Catálogo →",
-    "primaryBtnHref": "#tienda",
+    "primaryBtnHref": "#probador",
     "ghostBtnLabel": "Únete al Discord",
     "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv",
     "bgImage": "img/hero.png"
@@ -57,12 +57,12 @@
     "bgColor": "",
     "textColor": "#ffffff",
     "items": [
-      "Sin Escrow",
-      "Soporte 24/7",
-      "Updates Gratis",
+      "Calidad Premium",
+      "Diseños Exclusivos",
       "Entrega Inmediata",
-      "Código Abierto",
-      "ESX · QBCore · QBox"
+      "Hecho a Medida",
+      "Soporte 24/7",
+      "FiveM Ready"
     ]
   },
   "music": {
@@ -85,7 +85,7 @@
       "target": 50,
       "decimal": "",
       "suffix": "+",
-      "label": "Scripts"
+      "label": "Prendas"
     },
     {
       "target": 4,
@@ -102,40 +102,40 @@
   ],
   "trust": [
     {
-      "icon": "unlock",
-      "name": "Sin Escrow",
-      "desc": "Código 100% abierto. Sin bloqueos ni dependencias ocultas."
+      "icon": "star",
+      "name": "Calidad Premium",
+      "desc": "Prendas y props con acabado de nivel tienda."
     },
     {
-      "icon": "refresh",
-      "name": "Updates Gratis",
-      "desc": "Actualizaciones de por vida incluidas en cada compra."
-    },
-    {
-      "icon": "chat",
-      "name": "Soporte 24/7",
-      "desc": "Equipo disponible en Discord en todo momento."
+      "icon": "fire",
+      "name": "Diseños Exclusivos",
+      "desc": "Drops únicos que no verás en otro servidor."
     },
     {
       "icon": "bolt",
       "name": "Entrega Inmediata",
-      "desc": "Descarga automática al completar el pago."
+      "desc": "Recibe tu pedido al momento."
+    },
+    {
+      "icon": "chat",
+      "name": "Soporte 24/7",
+      "desc": "Te atendemos en Discord a toda hora."
     }
   ],
   "marquee": {
     "words": [
-      "FiveM",
-      "Scripts",
       "XKT",
-      "Premium"
+      "SAVAGE",
+      "Ropa",
+      "Props"
     ],
     "direction": "left",
     "speed": 32
   },
   "scriptsHeading": {
-    "tag": "Catálogo",
-    "title": "NUESTROS\nSCRIPTS",
-    "desc": "Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas."
+    "tag": "Tienda",
+    "title": "NUEVOS\nDROPS",
+    "desc": "Drops de ropa, props y contenido custom. Calidad premium para tu servidor."
   },
   "scriptsLayout": {
     "mode": "grid",
@@ -157,28 +157,28 @@
     "items": [
       {
         "stars": 5,
-        "text": "El Gang System de XKT transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.",
+        "text": "La ropa de XKT le cambió la pinta completa a nuestro servidor. Cortes limpios, texturas nítidas y cero drama al instalar.",
         "avatar": "MR",
         "name": "MadRoller_RP",
         "role": "Owner · Servidor 200+ slots"
       },
       {
         "stars": 5,
-        "text": "Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.",
+        "text": "Lo que más me gusta es la calidad de las prendas. Se nota el detalle en cada textura y el fit en los personajes es perfecto.",
         "avatar": "KX",
         "name": "KxiloDev",
-        "role": "Developer · Script Tester"
+        "role": "Developer · FiveM"
       },
       {
         "stars": 5,
-        "text": "Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.",
+        "text": "Props y ropa de otro nivel. El soporte en Discord responde rápido y los drops nuevos salen constantes. Muy recomendado.",
         "avatar": "NG",
         "name": "NightGang_ES",
         "role": "Admin · FiveM Server"
       },
       {
         "stars": 4,
-        "text": "Llevo usando scripts de XKT desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.",
+        "text": "Llevo vistiendo a mi servidor con XKT desde hace 6 meses. El catálogo 3D ayuda muchísimo a elegir antes de pedir.",
         "avatar": "ZR",
         "name": "ZeRoFault",
         "role": "Community Manager"

@@ -383,7 +383,7 @@
         <div class="field"><label>Etiqueta</label><input type="text" data-bind="scriptsHeading.tag"></div>
         <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="scriptsHeading.title"></textarea></div>
         <div class="field"><label>Descripción</label><textarea data-bind="scriptsHeading.desc"></textarea></div>
-        <div class="field"><label>Disposición de los scripts</label>
+        <div class="field"><label>Disposición de la tienda</label>
           <select data-bind="scriptsLayout.mode"><option value="grid">Cuadrícula (estático)</option><option value="carousel">Carrusel deslizante</option></select>
         </div>
         <div class="field-row">
@@ -568,33 +568,33 @@ document.getElementById('btnLogout').addEventListener('click', () => { localStor
 // DEFAULTS
 // ─────────────────────────────────────────────
 const DEFAULT_CONFIG = {
-  branding: { logoText: 'XKT SAVAGE', accentIndex: 0, logoImage: '', primaryColor: '#9333EA', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
+  branding: { logoText: 'XKT SAVAGE', accentIndex: 0, logoImage: '', primaryColor: '#9333EA', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Catálogo', navCtaHref: '#probador' },
   theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#9333EA', headingAlign: 'left', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
-  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'XKT', titleAccentIndex: 0, titleOutline: 'SAVAGE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '', titleImageSize: 360, subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
-  heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
+  hero: { tag: 'Ropa · Props · Custom', showTag: true, title: 'XKT', titleAccentIndex: 0, titleOutline: 'SAVAGE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '', titleImageSize: 360, subtitle: 'Prendas y props de calidad para servidores serios — Diseños exclusivos.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#probador', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
+  heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Calidad Premium', 'Diseños Exclusivos', 'Entrega Inmediata', 'Hecho a Medida', 'Soporte 24/7', 'FiveM Ready'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#9333EA', title: 'Lofi XKT', url: '', tracks: [] },
   stats: [
     { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
-    { target: 50, decimal: '', suffix: '+', label: 'Scripts' },
+    { target: 50, decimal: '', suffix: '+', label: 'Prendas' },
     { target: 4, decimal: '9', suffix: '', label: 'Rating' },
     { target: 24, decimal: '', suffix: '/7', label: 'Soporte' }
   ],
   trust: [
-    { icon: 'unlock', name: 'Sin Escrow', desc: 'Código 100% abierto. Sin bloqueos ni dependencias ocultas.' },
-    { icon: 'refresh', name: 'Updates Gratis', desc: 'Actualizaciones de por vida incluidas en cada compra.' },
-    { icon: 'chat', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
-    { icon: 'bolt', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
+    { icon: 'star', name: 'Calidad Premium', desc: 'Prendas y props con acabado de nivel tienda.' },
+    { icon: 'fire', name: 'Diseños Exclusivos', desc: 'Drops únicos que no verás en otro servidor.' },
+    { icon: 'chat', name: 'Soporte 24/7', desc: 'Te atendemos en Discord a toda hora.' },
+    { icon: 'bolt', name: 'Entrega Inmediata', desc: 'Recibe tu pedido al momento.' }
   ],
-  marquee: { words: ['FiveM', 'Scripts', 'XKT', 'Premium'], direction: 'left', speed: 32 },
-  scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
+  marquee: { words: ['XKT', 'SAVAGE', 'Ropa', 'Props'], direction: 'left', speed: 32 },
+  scriptsHeading: { tag: 'Tienda', title: 'NUEVOS\nDROPS', desc: 'Drops de ropa, props y contenido custom. Calidad premium para tu servidor.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
   store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame', productBgDark: 0.82 },
   reviews: { tag: 'Lo que dicen', title: 'REVIEWS\nREALES', view: 'grid', direction: 'left', speed: 40, items: [
-    { stars: 5, text: 'El Gang System de XKT transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
-    { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
-    { stars: 5, text: 'Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.', avatar: 'NG', name: 'NightGang_ES', role: 'Admin · FiveM Server' },
-    { stars: 4, text: 'Llevo usando scripts de XKT desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
+      { stars: 5, text: 'La ropa de XKT le cambió la pinta completa a nuestro servidor. Cortes limpios, texturas nítidas y cero drama al instalar.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
+      { stars: 5, text: 'Lo que más me gusta es la calidad de las prendas. Se nota el detalle en cada textura y el fit en los personajes es perfecto.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · FiveM' },
+      { stars: 5, text: 'Props y ropa de otro nivel. El soporte en Discord responde rápido y los drops nuevos salen constantes. Muy recomendado.', avatar: 'NG', name: 'NightGang_ES', role: 'Admin · FiveM Server' },
+      { stars: 4, text: 'Llevo vistiendo a mi servidor con XKT desde hace 6 meses. El catálogo 3D ayuda muchísimo a elegir antes de pedir.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
   ] },
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad XKT. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
   discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Publicaciones.', serverId: '', channels: [] },
@@ -604,7 +604,7 @@ const DEFAULT_CONFIG = {
 };
 
 const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner', divider: 'Separador', partners: 'Partners' };
-const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', probador: 'Probador 3D (ropa)', reviews: 'Reviews', discord: 'Discord en vivo', cta: 'CTA Discord' };
+const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda', probador: 'Probador 3D (ropa)', reviews: 'Reviews', discord: 'Discord en vivo', cta: 'CTA Discord' };
 const ICON_OPTIONS = ['lock','unlock','refresh','chat','bolt','shield','star','download','check','clock','code','box','users','gift','headset','server','tag','cart','heart','fire','rocket','globe'];
 const DRAFT_KEY = 'xkt_admin_config';
 const PREVIEW_KEY = 'xkt_preview_config';
