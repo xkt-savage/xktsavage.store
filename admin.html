@@ -537,8 +537,8 @@
 // ─────────────────────────────────────────────
 // LOGIN (gate cliente — disuasorio, no seguridad real)
 // ─────────────────────────────────────────────
-const USER_HASH = 'a29dca0e40f4e3bb177d00ff2c2a92554cb8d7e77713b01cbc1b2993d0a025e7';
-const PASS_HASH = 'fc4b54aa2f32ce14ad550bb3724817e0c1585e297835901c1f3a10c906a2bdef';
+const USER_HASH = '6979076a9e06b7ac6902a1bb661960563a0cdd2b560ac9365af112c8a3c6d70d';
+const PASS_HASH = 'd5b29a9845d5e900d029ed20db0c6e0c2323dcdef565a2d27c88459ebec16b34';
 async function sha256(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
