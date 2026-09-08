@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combinar outfit — XKT SAVAGE</title>
+<meta name="description" content="Arma tu outfit 3D: combina prendas XKT SAVAGE y míralas juntas.">
+<meta name="theme-color" content="#0a0a0c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root {
+    --purple: #9333EA; --purple-bright: #A855F7;
+    --grad: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%);
+    --bg: #0a0a0c; --surface: #101013; --surface2: #16161b;
+    --border: rgba(255,255,255,0.07); --text: #F2F2F4; --muted: #8a8a93;
+    --font-display: 'Bebas Neue', sans-serif; --font-head: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--purple); color: #fff; }
+  a { color: inherit; }
+
+  .bg-fx { position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background: radial-gradient(1000px 600px at 80% -10%, rgba(147,51,234,0.10), transparent 60%), var(--bg); }
+  .bg-grid { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .5;
+    background-image: linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%); }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 32px; flex-wrap: wrap; }
+  .back { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text); text-decoration: none; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 20px; }
+  .back:hover { border-color: var(--purple); color: #fff; }
+  .cb-title { font-family: var(--font-display); font-size: 34px; letter-spacing: 4px; }
+  .cb-title span { color: var(--purple); }
+  .cb-count { font-family: var(--font-head); letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-size: 13px; }
+
+  .cb-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; padding: 6px 32px 40px; max-width: 1500px; margin: 0 auto; }
+  .cb-viewer-wrap { position: relative; min-height: 62vh; border-radius: 18px; overflow: hidden;
+    background: radial-gradient(circle at 50% 40%, rgba(147,51,234,0.07), transparent 70%); }
+  #cbCanvas { width: 100%; height: 62vh; min-height: 420px; display: block; touch-action: none; cursor: grab; }
+  #cbCanvas:active { cursor: grabbing; }
+  .cb-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
+    font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-size: 14px; padding: 20px; pointer-events: none; }
+  .cb-status { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); font-family: var(--font-head);
+    letter-spacing: 2px; text-transform: uppercase; font-size: 12px; color: var(--muted); background: rgba(10,10,12,0.7);
+    border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; display: none; }
+  .cb-bar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+  .cb-btn { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #fff; background: rgba(16,16,19,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px;
+    padding: 9px 20px; cursor: pointer; backdrop-filter: blur(8px); }
+  .cb-btn:hover { border-color: var(--purple); }
+  .cb-btn.on { background: var(--grad); border-color: transparent; }
+
+  .cb-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .cb-tray-title { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+  #cbTray { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cb-chip { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 13px; letter-spacing: 1px;
+    text-transform: uppercase; color: #fff; background: rgba(147,51,234,0.12); border: 1px solid rgba(147,51,234,0.4);
+    border-radius: 100px; padding: 7px 8px 7px 14px; }
+  .cb-chip small { color: var(--muted); font-size: 11px; }
+  .cb-chip button { width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(255,255,255,0.12);
+    color: #fff; cursor: pointer; font-size: 12px; line-height: 1; }
+  .cb-chip button:hover { background: var(--purple); }
+  .cb-empty-tray { font-size: 13px; color: var(--muted); }
+  #cbAvail { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 46vh; padding-right: 4px; }
+  .cb-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+  .cb-item .nm { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .cb-item .sl { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .cb-toggle { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 1px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15); background: transparent; color: var(--text); padding: 8px 14px; cursor: pointer; white-space: nowrap; }
+  .cb-toggle:hover { border-color: var(--purple); }
+  .cb-toggle.on { background: var(--grad); border-color: transparent; color: #fff; }
+
+  @media (max-width: 900px) {
+    .cb-layout { grid-template-columns: 1fr; padding: 6px 16px 32px; }
+    #cbCanvas { height: 52vh; min-height: 340px; }
+    #cbAvail { max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-fx"></div>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back" href="../">← Tienda</a>
+  <div class="cb-title">COMBINAR <span>OUTFIT</span></div>
+  <div class="cb-count"><span id="cbCount">0</span>/8 prendas</div>
+</div>
+
+<div class="cb-layout">
+  <div class="cb-viewer-wrap">
+    <canvas id="cbCanvas"></canvas>
+    <div class="cb-hint" id="cbHint">Elige prendas abajo<br>para armar tu outfit</div>
+    <div class="cb-status" id="cbStatus"></div>
+    <div class="cb-bar">
+      <button class="cb-btn on" id="cbSpin">⟳ Girar</button>
+      <button class="cb-btn" id="cbClear">Limpiar</button>
+    </div>
+  </div>
+  <aside class="cb-side">
+    <div class="cb-tray-title">Tu outfit</div>
+    <div id="cbTray"><span class="cb-empty-tray">Vacío por ahora.</span></div>
+    <div class="cb-tray-title">Prendas</div>
+    <div id="cbAvail"></div>
+  </aside>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const MAX = 8;
+const SLOT_LABEL = { torso: 'Torso', piernas: 'Piernas', brazos: 'Brazos', cabeza: 'Cabeza', pies: 'Pies', manos: 'Manos', accesorio: 'Accesorio' };
+const slotLabel = s => (s && SLOT_LABEL[s]) || 'Extra';
+const LS_KEY = 'xkt_outfit';
+
+let catalog = [];
+let equipped = [];
+const cache = new Map();
+
+const canvas = document.getElementById('cbCanvas');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
+camera.position.set(0.9, 1.4, 2.6);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.enablePan = false;
+controls.minPolarAngle = THREE.MathUtils.degToRad(60);
+controls.maxPolarAngle = THREE.MathUtils.degToRad(92);
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.4;
+
+const key = new THREE.DirectionalLight(0xffffff, 1.6);
+key.position.set(2.5, 4, 3.5);
+scene.add(key);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x221133, 0.5));
+
+const outfit = new THREE.Group();
+scene.add(outfit);
+const loader = new GLTFLoader();
+
+function getLS() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch (e) { return []; }
+}
+function setLS(ids) { try { localStorage.setItem(LS_KEY, JSON.stringify(ids)); } catch (e) {} }
+
+function status(msg) {
+  const el = document.getElementById('cbStatus');
+  if (!msg) { el.style.display = 'none'; return; }
+  el.textContent = msg;
+  el.style.display = '';
+}
+
+function itemById(id) { return catalog.find(x => String(x.id) === String(id)); }
+
+function toggle(id) {
+  id = String(id);
+  const item = itemById(id);
+  if (equipped.includes(id)) {
+    equipped = equipped.filter(x => x !== id);
+  } else {
+    if (item && item.slot) {
+      equipped = equipped.filter(x => {
+        const it = itemById(x);
+        return !(it && it.slot && it.slot === item.slot);
+      });
+    }
+    equipped = [...equipped, id];
+    if (equipped.length > MAX) equipped = equipped.slice(equipped.length - MAX);
+  }
+  setLS(equipped);
+  renderSide();
+  refreshOutfit();
+}
+
+function loadModel(item) {
+  if (cache.has(item.id)) return cache.get(item.id);
+  const p = loader.loadAsync('../' + item.glb).then(g => {
+    g.scene.traverse(o => {
+      if (o.isMesh) {
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => {
+          if (!m) return;
+          m.transparent = false;
+          m.opacity = 1;
+          if ('roughness' in m) m.roughness = 1;
+          if ('metalness' in m) m.metalness = 0;
+        });
+      }
+    });
+    return g.scene;
+  }).catch(() => null);
+  cache.set(item.id, p);
+  return p;
+}
+
+async function refreshOutfit() {
+  document.getElementById('cbCount').textContent = equipped.length;
+  document.getElementById('cbHint').style.display = equipped.length ? 'none' : '';
+  const tray = document.getElementById('cbTray');
+  if (!equipped.length) {
+    tray.innerHTML = '<span class="cb-empty-tray">Vacío por ahora.</span>';
+  } else {
+    tray.innerHTML = equipped.map(id => {
+      const it = itemById(id);
+      const nm = it ? (it.nombre || String(it.glb || id).split('/').pop().replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ')) : id;
+      return `<span class="cb-chip">${nm} <small>${it && it.slot ? slotLabel(it.slot) : ''}</small><button data-un="${id}" aria-label="Quitar">✕</button></span>`;
+    }).join('');
+    tray.querySelectorAll('[data-un]').forEach(b => b.addEventListener('click', () => toggle(b.dataset.un)));
+  }
+  while (outfit.children.length) outfit.remove(outfit.children[0]);
+  if (!equipped.length) return;
+  status('Cargando outfit…');
+  for (const id of equipped) {
+    const it = itemById(id);
+    if (!it || !it.glb) continue;
+    const scene3d = await loadModel(it);
+    if (scene3d) outfit.add(scene3d.clone(true));
+  }
+  fitCamera();
+  status('');
+}
+
+function fitCamera() {
+  const box = new THREE.Box3().setFromObject(outfit);
+  if (box.isEmpty()) return;
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const radius = Math.max(size.x, size.y, size.z);
+  controls.target.copy(center);
+  const dir = new THREE.Vector3(0.55, 0.3, 1).normalize();
+  camera.position.copy(center).addScaledVector(dir, radius * 1.9);
+  camera.near = Math.max(0.01, radius / 100);
+  camera.far = radius * 20;
+  camera.updateProjectionMatrix();
+  controls.minDistance = radius * 0.6;
+  controls.maxDistance = radius * 4;
+}
+
+function renderSide() {
+  const avail = document.getElementById('cbAvail');
+  avail.innerHTML = catalog.map(it => {
+    const on = equipped.includes(String(it.id));
+    const nm = it.nombre || String(it.glb || it.id).split('/').pop().replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ');
+    return `<div class="cb-item"><div><div class="nm">${nm}</div><div class="sl">${it.slot ? slotLabel(it.slot) : (it.categoria || 'Prenda')}</div></div><button class="cb-toggle${on ? ' on' : ''}" data-tg="${it.id}">${on ? '✓ Puesta' : '＋ Poner'}</button></div>`;
+  }).join('');
+  avail.querySelectorAll('[data-tg]').forEach(b => b.addEventListener('click', () => toggle(b.dataset.tg)));
+}
+
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+
+document.getElementById('cbSpin').addEventListener('click', e => {
+  controls.autoRotate = !controls.autoRotate;
+  e.currentTarget.classList.toggle('on', controls.autoRotate);
+});
+document.getElementById('cbClear').addEventListener('click', () => {
+  equipped = [];
+  setLS(equipped);
+  renderSide();
+  refreshOutfit();
+});
+
+(async function boot() {
+  const q = (new URLSearchParams(location.search).get('ids') || '').split(',').map(s => s.trim()).filter(Boolean);
+  equipped = (q.length ? q : getLS()).slice(0, MAX);
+  try {
+    catalog = await (await fetch('../ropa/catalogo.json', { cache: 'no-store' })).json();
+  } catch (e) { catalog = []; }
+  equipped = equipped.filter(id => catalog.some(x => String(x.id) === String(id)));
+  resize();
+  renderSide();
+  await refreshOutfit();
+  resize();
+})();
+
+(function loop() {
+  requestAnimationFrame(loop);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>

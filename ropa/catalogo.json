@@ -2,6 +2,7 @@
   {
     "id": "camiseta1brazo_hombre",
     "categoria": "Camisetas",
+    "slot": "torso",
     "descripcion": "",
     "glb": "ropa/camiseta.glb",
     "thumb": "img/hero.jpg",
@@ -12,6 +13,7 @@
   {
     "id": "pants",
     "categoria": "Pantalones",
+    "slot": "piernas",
     "descripcion": "",
     "glb": "ropa/Pants.glb",
     "thumb": "",
@@ -22,6 +24,7 @@
   {
     "id": "vendasbrazo",
     "categoria": "Accesorios",
+    "slot": "brazos",
     "descripcion": "",
     "glb": "ropa/vendasbrazo.glb",
     "thumb": "",

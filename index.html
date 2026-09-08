@@ -799,6 +799,17 @@
   .ropa-note { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
   .ropa-pill { display: inline-block; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border-red); color: var(--red); background: rgba(147,51,234,0.08); margin-bottom: 8px; }
   .ropa-pill.pending { color: var(--muted); border-color: var(--border-2); background: rgba(255,255,255,0.03); }
+  .ropa-combine { display: block; width: 100%; margin-top: 10px; font-family: var(--font-head); font-size: 12px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--text); background: transparent;
+    border: 1px dashed var(--border-2); padding: 11px; text-align: center; cursor: pointer;
+    border-radius: 8px; transition: all .25s var(--ease); }
+  .ropa-combine:hover { border-color: var(--purple); color: #fff; }
+  .ropa-combine.on { background: rgba(147,51,234,0.14); border: 1px solid var(--purple); color: #fff; }
+  .outfit-pill { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500;
+    font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #fff; background: var(--grad-red); padding: 14px 30px; border-radius: 100px; text-decoration: none;
+    box-shadow: 0 12px 32px rgba(147,51,234,0.4); }
+  .outfit-pill:hover { transform: translateX(-50%) translateY(-2px); }
 
   /* DISCORD EN VIVO (tarjetas flotantes del feed) */
   .dc-list { display: flex; flex-direction: column; gap: 14px; }
@@ -1164,6 +1175,9 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- OUTFIT PILL -->
+<a id="outfitPill" class="outfit-pill" href="combinar/" style="display:none;">👕 Ver outfit (<span id="outfitCount">0</span>) →</a>
 
 <!-- MUSIC PLAYER -->
 <div class="music-player pos-br paused" id="musicPlayer" style="display:none;">
@@ -1712,6 +1726,51 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal
 let ropaItems = [];
 let ropaActiveCat = 'all';
 
+// ── OUTFIT (vestidor: selección persistente para combinar/) ──
+const OUTFIT_KEY = 'xkt_outfit';
+const OUTFIT_MAX = 8;
+function getOutfit() {
+  try { const o = JSON.parse(localStorage.getItem(OUTFIT_KEY)); return Array.isArray(o) ? o.map(String) : []; }
+  catch (e) { return []; }
+}
+function inOutfit(id) { return getOutfit().includes(String(id)); }
+function toggleOutfit(id) {
+  id = String(id);
+  const item = (typeof ropaItems !== 'undefined' ? ropaItems : []).find(x => String(x.id) === id);
+  let o = getOutfit();
+  if (o.includes(id)) {
+    o = o.filter(x => x !== id);
+  } else {
+    if (item && item.slot) {
+      o = o.filter(x => {
+        const it = (typeof ropaItems !== 'undefined' ? ropaItems : []).find(y => String(y.id) === x);
+        return !(it && it.slot && it.slot === item.slot);
+      });
+    }
+    o = [...o, id];
+    if (o.length > OUTFIT_MAX) o = o.slice(o.length - OUTFIT_MAX);
+  }
+  try { localStorage.setItem(OUTFIT_KEY, JSON.stringify(o)); } catch (e) {}
+  updateOutfitPill();
+  refreshCombineButtons();
+}
+function refreshCombineButtons() {
+  document.querySelectorAll('[data-combine]').forEach(b => {
+    const on = inOutfit(b.dataset.combine);
+    b.classList.toggle('on', on);
+    b.textContent = on ? '✓ En outfit' : '＋ Combinar';
+  });
+}
+function updateOutfitPill() {
+  const pill = document.getElementById('outfitPill');
+  if (!pill) return;
+  const o = getOutfit();
+  const n = document.getElementById('outfitCount');
+  if (n) n.textContent = o.length;
+  pill.style.display = o.length ? '' : 'none';
+  pill.href = 'combinar/?ids=' + encodeURIComponent(o.join(','));
+}
+
 // Nombre visible: usa `nombre` si existe, si no el nombre del archivo .glb (ej. "camiseta 3445.glb" -> "camiseta 3445").
 function nombreDesdeGlb(glb) {
   const base = String(glb || '').split('/').pop().split('?')[0].replace(/\.[a-z0-9]+$/i, '');
@@ -1808,6 +1867,7 @@ function renderRopaGrid(filterCat) {
             ${p.precio ? `<span class="script-price">${escHTML(p.precio)}</span>` : ''}
           </div>
           <span class="script-btn">${hasGlb ? 'Ver en 3D →' : 'Ver detalle'}</span>
+          ${hasGlb ? `<button class="ropa-combine${inOutfit(p.id) ? ' on' : ''}" data-combine="${escHTML(p.id)}">${inOutfit(p.id) ? '✓ En outfit' : '＋ Combinar'}</button>` : ''}
         </div>
       </article>`;
   }).join('');
@@ -1818,6 +1878,9 @@ function renderRopaGrid(filterCat) {
       card.addEventListener('mouseenter', () => { mv.autoRotate = true; });
       card.addEventListener('mouseleave', () => { mv.autoRotate = false; });
     }
+  });
+  grid.querySelectorAll('[data-combine]').forEach(b => {
+    b.addEventListener('click', e => { e.stopPropagation(); toggleOutfit(b.dataset.combine); });
   });
   grid.querySelectorAll('model-viewer.ropa-card-viewer').forEach(mv => {
     mv.addEventListener('load', () => applyRopaMaterialFix(mv), { once: true });
@@ -1846,10 +1909,17 @@ function openRopaModal(id) {
   }
   const acts = document.getElementById('ropaModalActions');
   let html = '';
+  if (p.glb) html += `<button class="btn-ghost" id="ropaCombineBtn">${inOutfit(p.id) ? '✓ En outfit' : '＋ Combinar'}</button>`;
   if (p.ydd) html += `<a class="btn-ghost" href="${escHTML(p.ydd)}" download>Descargar .ydd</a>`;
   if (p.ytd) html += `<a class="btn-ghost" href="${escHTML(p.ytd)}" download>Descargar .ytd</a>`;
   acts.innerHTML = html;
   acts.style.display = html ? '' : 'none';
+  const cb = document.getElementById('ropaCombineBtn');
+  if (cb) cb.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleOutfit(p.id);
+    cb.textContent = inOutfit(p.id) ? '✓ En outfit' : '＋ Combinar';
+  });
   document.getElementById('ropaModalOverlay').classList.add('open');
   document.body.classList.add('no-scroll');
 }
@@ -2812,6 +2882,7 @@ observeReveals();
 observeCounts();
 init();
 loadRopa();
+updateOutfitPill();
 resumePendingPurchase();
 checkAuthReturn();</script>
 </body>

@@ -52,6 +52,9 @@ Edita `ropa/catalogo.json` y añade un objeto por prenda:
 ```
 
 - `glb`: ruta relativa al `.glb` (obligatorio para el 3D).
+- `slot`: zona del cuerpo para el vestidor (`torso`, `piernas`, `brazos`,
+  `cabeza`, `pies`, `manos`, `accesorio`). Solo una prenda por slot en el
+  outfit; vacío = extra combinable. Ej: `camiseta 3445.glb` con slot `torso`.
 - `thumb`: imagen de la tarjeta (opcional; si falla se muestra icono 👕).
 - `ydd` / `ytd`: enlaces de descarga opcionales (URL o vacíos).
 - La web **no puede listar la carpeta sola** (GitHub Pages es estático):
