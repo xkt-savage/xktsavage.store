@@ -29,7 +29,7 @@
   },
   "hero": {
     "tag": "Ropa · Props · Custom",
-    "showTag": true,
+    "showTag": false,
     "title": "XKT",
     "titleAccentIndex": 0,
     "titleOutline": "SAVAGE",
