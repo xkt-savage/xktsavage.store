@@ -4,7 +4,7 @@
     "accentIndex": 0,
     "logoImage": "img/logo.png",
     "primaryColor": "#9333EA",
-    "discordUrl": "https://discord.gg/RNVxxAU9Nv",
+    "discordUrl": "https://discord.gg/RNVxxAU9Nvl",
     "navCtaLabel": "Ver Catálogo",
     "navCtaHref": "#probador"
   },
@@ -52,7 +52,7 @@
     "position": "bottom",
     "direction": "left",
     "speed": 28,
-    "opacity": 1,
+    "opacity": 0.7,
     "height": 40,
     "bgColor": "",
     "textColor": "#ffffff",
@@ -216,14 +216,14 @@
   },
   "layout": {
     "order": [
-      "trust",
+      "probador",
       "marquee",
       "tienda",
-      "probador",
       "reviews",
       "discord",
       "cta",
-      "b:bowvdzg6"
+      "b:bowvdzg6",
+      "trust"
     ],
     "visible": {
       "trust": true,
@@ -231,8 +231,8 @@
       "tienda": false,
       "probador": true,
       "reviews": false,
-      "discord": true,
-      "cta": true,
+      "discord": false,
+      "cta": false,
       "b:bowvdzg6": true
     }
   },
