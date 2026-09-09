@@ -52,7 +52,7 @@
     "position": "bottom",
     "direction": "left",
     "speed": 28,
-    "opacity": 1,
+    "opacity": 0.7,
     "height": 40,
     "bgColor": "",
     "textColor": "#ffffff",
@@ -216,9 +216,9 @@
   },
   "layout": {
     "order": [
+      "probador",
       "marquee",
       "tienda",
-      "probador",
       "reviews",
       "discord",
       "cta",
@@ -226,13 +226,13 @@
       "trust"
     ],
     "visible": {
-      "trust": false,
+      "trust": true,
       "marquee": true,
       "tienda": false,
       "probador": true,
       "reviews": false,
-      "discord": true,
-      "cta": true,
+      "discord": false,
+      "cta": false,
       "b:bowvdzg6": true
     }
   },
