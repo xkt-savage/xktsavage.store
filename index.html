@@ -811,15 +811,22 @@
   #outfitModal { max-width: min(96vw, 1750px); background: transparent; border: none; box-shadow: none; }
   #outfitModalClose { background: transparent; border: none; font-size: 30px; color: var(--muted); width: 48px; height: 48px; }
   #outfitModalClose:hover { background: transparent; border: none; color: #fff; }
-  .om-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
-  .om-viewer-wrap { position: relative; min-height: 78vh; border-radius: 12px; overflow: hidden;
+  .om-grid { display: grid; grid-template-columns: 300px 1fr 250px; gap: 20px; align-items: start; }
+  .om-viewer-wrap { position: relative; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
     background: radial-gradient(circle at 50% 40%, rgba(147,51,234,0.07), transparent 70%); }
-  #omCanvas { width: 100%; height: 78vh; min-height: 520px; display: block; touch-action: none; cursor: grab; }
+  .om-viewer-wrap.light { background: radial-gradient(circle at 50% 40%, rgba(147,51,234,0.14), transparent 70%), #e9e7f2; }
+  .om-viewer-wrap.light .om-hint { color: #6b7280; text-shadow: none; }
+  #omCanvas { width: 100%; height: 68vh; min-height: 460px; display: block; touch-action: none; cursor: grab; }
   #omCanvas:active { cursor: grabbing; }
+  .om-under { display: flex; gap: 26px; justify-content: center; padding: 12px 0 4px; }
+  .om-textbtn { background: none; border: none; font-family: var(--font-head); font-size: 14px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; padding: 6px 4px; }
+  .om-textbtn:hover { color: #fff; }
+  .om-textbtn.on { color: #fff; }
   .om-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
     font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-size: 14px;
     padding: 20px; pointer-events: none; text-shadow: 0 2px 20px rgba(0,0,0,0.85); }
-  .om-bar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+  .om-bar { display: none; }
   .om-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-height: 82vh; overflow-y: auto; padding-right: 4px; }
   .om-count { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
     color: var(--muted); text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
@@ -837,6 +844,7 @@
   #omAvail { display: flex; flex-direction: column; gap: 8px; }
   @media (max-width: 900px) {
     .om-grid { grid-template-columns: 1fr; }
+    .om-viewer-wrap { order: -1; }
     #omCanvas { height: 46vh; min-height: 300px; }
     .om-side { max-height: 34vh; }
   }
@@ -1228,19 +1236,22 @@
   <div class="modal om-modal" id="outfitModal">
     <button class="modal-close" id="outfitModalClose" aria-label="Cerrar">✕</button>
     <div class="om-grid">
-      <div class="om-viewer-wrap">
+      <aside class="om-side">
+        <div class="om-sub">Prendas</div>
+        <div id="omAvail"></div>
+      </aside>
+      <div class="om-viewer-wrap" id="omViewerWrap">
         <canvas id="omCanvas"></canvas>
-        <div class="om-hint" id="omHint">Elige prendas →<br>para armar tu outfit</div>
-        <div class="om-bar">
-          <button class="cb-btn on" id="omSpin">⟳ Girar</button>
-          <button class="cb-btn" id="omClear">Limpiar</button>
+        <div class="om-hint" id="omHint">Elige prendas para armar tu outfit</div>
+        <div class="om-under">
+          <button class="om-textbtn on" id="omSpin">⟳ Girar</button>
+          <button class="om-textbtn" id="omBg">◐ Fondo claro</button>
+          <button class="om-textbtn" id="omClear">Limpiar</button>
         </div>
       </div>
       <aside class="om-side">
         <div class="om-count"><span id="omCount">0</span>/8 en tu outfit</div>
         <div id="omTray"></div>
-        <div class="om-sub">Prendas</div>
-        <div id="omAvail"></div>
       </aside>
     </div>
   </div>
@@ -3168,6 +3179,11 @@ document.getElementById('omSpin').addEventListener('click', e => {
   if (!omThree) return;
   omThree.controls.autoRotate = !omThree.controls.autoRotate;
   e.currentTarget.classList.toggle('on', omThree.controls.autoRotate);
+});
+document.getElementById('omBg').addEventListener('click', e => {
+  const light = document.getElementById('omViewerWrap').classList.toggle('light');
+  e.currentTarget.textContent = light ? '◑ Fondo oscuro' : '◐ Fondo claro';
+  e.currentTarget.classList.toggle('on', light);
 });
 document.getElementById('omClear').addEventListener('click', () => {
   omEquipped = [];
