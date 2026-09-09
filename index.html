@@ -1246,6 +1246,7 @@
         <div class="om-under">
           <button class="om-textbtn on" id="omSpin">⟳ Girar</button>
           <button class="om-textbtn" id="omBg">◐ Fondo claro</button>
+          <button class="om-textbtn" id="omCenter">◎ Centrar</button>
           <button class="om-textbtn" id="omClear">Limpiar</button>
         </div>
       </div>
@@ -3082,17 +3083,22 @@ async function omRefresh() {
 
 function omFit() {
   const T = omThree;
+  // Pivote fijo en el eje del cuerpo: ninguna prenda mueve el centro de giro.
+  const pivot = new T.THREE.Vector3(0, 0.95, 0);
   const box = new T.THREE.Box3().setFromObject(T.outfit);
-  if (box.isEmpty()) return;
-  const center = box.getCenter(new T.THREE.Vector3());
-  const size = box.getSize(new T.THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const fov = T.THREE.MathUtils.degToRad(T.camera.fov);
-  const fitH = maxDim / (2 * Math.tan(fov / 2));
-  const dist = Math.max(fitH, fitH / T.camera.aspect) * 1.12;
-  T.controls.target.copy(center);
-  const dir = new T.THREE.Vector3(0.55, 0.3, 1).normalize();
-  T.camera.position.copy(center).addScaledVector(dir, dist);
+  let dist = 2.6;
+  if (!box.isEmpty()) {
+    const size = box.getSize(new T.THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = T.THREE.MathUtils.degToRad(T.camera.fov);
+    const fitH = maxDim / (2 * Math.tan(fov / 2));
+    dist = Math.max(fitH, fitH / T.camera.aspect) * 1.12;
+  }
+  T.controls.target.copy(pivot);
+  const dir = T.camera.position.clone().sub(pivot);
+  if (dir.lengthSq() < 1e-6) dir.set(0.55, 0.3, 1);
+  dir.normalize();
+  T.camera.position.copy(pivot).addScaledVector(dir, dist);
   T.camera.near = Math.max(0.01, dist / 100);
   T.camera.far = dist * 20;
   T.camera.updateProjectionMatrix();
@@ -3184,6 +3190,11 @@ document.getElementById('omBg').addEventListener('click', e => {
   const light = document.getElementById('omViewerWrap').classList.toggle('light');
   e.currentTarget.textContent = light ? '◑ Fondo oscuro' : '◐ Fondo claro';
   e.currentTarget.classList.toggle('on', light);
+});
+document.getElementById('omCenter').addEventListener('click', () => {
+  if (!omThree) return;
+  omResize();
+  omFit();
 });
 document.getElementById('omClear').addEventListener('click', () => {
   omEquipped = [];
