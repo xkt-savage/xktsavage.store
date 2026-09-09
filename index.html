@@ -2152,29 +2152,34 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
 (function cursorTrail() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let last = 0, lx = null, ly = null;
-  document.addEventListener('mousemove', e => {
-    const now = performance.now();
-    if (now - last < 16) return;
-    last = now;
-    const dx = lx === null ? 0 : e.clientX - lx;
-    const dy = ly === null ? 0 : e.clientY - ly;
-    lx = e.clientX; ly = e.clientY;
-    const dist = Math.hypot(dx, dy);
-    if (dist < 2) return;
+  let lx = null, ly = null;
+  const stamp = (x, y, angle, w) => {
     const s = document.createElement('span');
     s.className = 'trail-neon';
-    const len = Math.max(10, Math.min(46, dist * 1.6));
-    s.style.width = len + 'px';
+    s.style.width = w + 'px';
     s.style.height = '5px';
-    s.style.left = e.clientX + 'px';
-    s.style.top = e.clientY + 'px';
-    s.style.transform = `translate(-50%,-50%) rotate(${Math.atan2(dy, dx)}rad)`;
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.transform = `translate(-50%,-50%) rotate(${angle}rad)`;
     document.body.appendChild(s);
     requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add('go')));
-    setTimeout(() => s.remove(), 500);
+    setTimeout(() => s.remove(), 550);
+  };
+  document.addEventListener('mousemove', e => {
+    if (lx === null) { lx = e.clientX; ly = e.clientY; return; }
+    const dx = e.clientX - lx, dy = e.clientY - ly;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 4) return;
+    const angle = Math.atan2(dy, dx);
+    const steps = Math.min(12, Math.max(1, Math.floor(dist / 7)));
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps;
+      const w = 10 + Math.min(30, dist * 0.9) * (1 - t * 0.4);
+      stamp(lx + dx * t, ly + dy * t, angle, w);
+    }
+    lx = e.clientX; ly = e.clientY;
     const all = document.querySelectorAll('.trail-neon');
-    if (all.length > 50) all[0].remove();
+    if (all.length > 80) for (let i = 0; i < all.length - 80; i++) all[i].remove();
   }, { passive: true });
 })();
 
