@@ -138,7 +138,7 @@ const cache = new Map();
 const canvas = document.getElementById('cbCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMapping = THREE.NoToneMapping;
 renderer.toneMappingExposure = 1.0;
 
 const scene = new THREE.Scene();
