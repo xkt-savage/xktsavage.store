@@ -4,7 +4,7 @@
     "accentIndex": 0,
     "logoImage": "img/logo.png",
     "primaryColor": "#9333EA",
-    "discordUrl": "https://discord.gg/RNVxxAU9Nv",
+    "discordUrl": "https://discord.gg/RNVxxAU9Nvl",
     "navCtaLabel": "Ver Catálogo",
     "navCtaHref": "#probador"
   },
@@ -216,17 +216,17 @@
   },
   "layout": {
     "order": [
-      "trust",
       "marquee",
       "tienda",
       "probador",
       "reviews",
       "discord",
       "cta",
-      "b:bowvdzg6"
+      "b:bowvdzg6",
+      "trust"
     ],
     "visible": {
-      "trust": true,
+      "trust": false,
       "marquee": true,
       "tienda": false,
       "probador": true,
