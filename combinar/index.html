@@ -209,8 +209,17 @@ function loadModel(item) {
           if (!m) return;
           m.transparent = false;
           m.opacity = 1;
+          m.depthWrite = true;
+          m.alphaTest = 0;
           if ('roughness' in m) m.roughness = 1;
           if ('metalness' in m) m.metalness = 0;
+          if ('transmission' in m) m.transmission = 0;
+          if ('thickness' in m) m.thickness = 0;
+          if ('clearcoat' in m) m.clearcoat = 0;
+          if ('clearcoatRoughness' in m) m.clearcoatRoughness = 1;
+          if ('sheen' in m) m.sheen = 0;
+          if ('specularIntensity' in m) m.specularIntensity = 0;
+          m.needsUpdate = true;
         });
       }
     });

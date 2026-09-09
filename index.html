@@ -11,6 +11,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=Permanent+Marker&display=swap" rel="stylesheet">
 <script src="https://js.tebex.io/v/1.js"></script>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 <style>
   :root {
     --red: #9333EA;
@@ -778,7 +786,54 @@
   .dv-10 i { width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--dvc) 50%, transparent); box-shadow: 0 0 16px var(--dvc); animation: dvscan 3s ease-in-out infinite; }
   @keyframes dvscan { 0%,100% { opacity: .25; transform: scaleX(.3); } 50% { opacity: 1; transform: scaleX(1); } }
 
-  /* PROBADOR 3D (ropa EUP: tarjetas + visor model-viewer) */
+  .cb-btn { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #fff; background: rgba(16,16,19,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px;
+    padding: 9px 20px; cursor: pointer; backdrop-filter: blur(8px); }
+  .cb-btn:hover { border-color: var(--purple); }
+  .cb-btn.on { background: var(--grad-red); border-color: transparent; }
+  .cb-chip { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 13px; letter-spacing: 1px;
+    text-transform: uppercase; color: #fff; background: rgba(16,16,19,0.85); border: 1px solid rgba(147,51,234,0.4);
+    border-radius: 100px; padding: 7px 8px 7px 14px; }
+  .cb-chip small { color: var(--muted); font-size: 11px; }
+  .cb-chip button { width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(255,255,255,0.12);
+    color: #fff; cursor: pointer; font-size: 12px; line-height: 1; }
+  .cb-chip button:hover { background: var(--purple); }
+  .cb-empty-tray { font-size: 13px; color: var(--muted); text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
+  .cb-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(16,16,19,0.75);
+    border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; backdrop-filter: blur(6px); }
+  .cb-item .nm { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .cb-item .sl { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .cb-toggle { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 1px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15); background: transparent; color: var(--text); padding: 8px 14px; cursor: pointer; white-space: nowrap; }
+  .cb-toggle:hover { border-color: var(--purple); }
+  .cb-toggle.on { background: var(--grad-red); border-color: transparent; color: #fff; }
+  #outfitModalOverlay { background: rgba(10,10,12,0.25); backdrop-filter: blur(22px) saturate(130%); -webkit-backdrop-filter: blur(22px) saturate(130%); }
+  #outfitModal { max-width: 1300px; background: transparent; border: none; box-shadow: none; }
+  #outfitModalClose { background: transparent; border: none; font-size: 30px; color: var(--muted); width: 48px; height: 48px; }
+  #outfitModalClose:hover { background: transparent; border: none; color: #fff; }
+  .om-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  .om-viewer-wrap { position: relative; min-height: 60vh; border-radius: 12px; overflow: hidden;
+    background: radial-gradient(circle at 50% 40%, rgba(147,51,234,0.07), transparent 70%); }
+  #omCanvas { width: 100%; height: 60vh; min-height: 400px; display: block; touch-action: none; cursor: grab; }
+  #omCanvas:active { cursor: grabbing; }
+  .om-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
+    font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-size: 14px;
+    padding: 20px; pointer-events: none; text-shadow: 0 2px 20px rgba(0,0,0,0.85); }
+  .om-bar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+  .om-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-height: 68vh; overflow-y: auto; padding-right: 4px; }
+  .om-count { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
+  #omTray { display: flex; flex-wrap: wrap; gap: 8px; }
+  .om-sub { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); margin-top: 6px; text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
+  .om-cat { font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--purple); margin: 8px 0 2px; text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
+  #omAvail { display: flex; flex-direction: column; gap: 8px; }
+  @media (max-width: 900px) {
+    .om-grid { grid-template-columns: 1fr; }
+    #omCanvas { height: 46vh; min-height: 300px; }
+    .om-side { max-height: 34vh; }
+  }
   .ropa-viewer { width: 100%; height: min(66vh, 640px); min-height: 440px; background: transparent; border: none; border-radius: 0; --poster-color: transparent; }
   .ropa-viewer:focus { outline: none; }
   #ropaModalName { font-family: 'Permanent Marker', cursive; font-weight: 400; font-size: 38px; letter-spacing: 1px; }
@@ -799,17 +854,6 @@
   .ropa-note { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
   .ropa-pill { display: inline-block; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border-red); color: var(--red); background: rgba(147,51,234,0.08); margin-bottom: 8px; }
   .ropa-pill.pending { color: var(--muted); border-color: var(--border-2); background: rgba(255,255,255,0.03); }
-  .ropa-combine { display: block; width: 100%; margin-top: 10px; font-family: var(--font-head); font-size: 12px; font-weight: 700;
-    letter-spacing: 3px; text-transform: uppercase; color: var(--text); background: transparent;
-    border: 1px dashed var(--border-2); padding: 11px; text-align: center; cursor: pointer;
-    border-radius: 8px; transition: all .25s var(--ease); }
-  .ropa-combine:hover { border-color: var(--purple); color: #fff; }
-  .ropa-combine.on { background: rgba(147,51,234,0.14); border: 1px solid var(--purple); color: #fff; }
-  .outfit-pill { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500;
-    font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-    color: #fff; background: var(--grad-red); padding: 14px 30px; border-radius: 100px; text-decoration: none;
-    box-shadow: 0 12px 32px rgba(147,51,234,0.4); }
-  .outfit-pill:hover { transform: translateX(-50%) translateY(-2px); }
 
   /* DISCORD EN VIVO (tarjetas flotantes del feed) */
   .dc-list { display: flex; flex-direction: column; gap: 14px; }
@@ -987,6 +1031,7 @@
       <div class="section-tag" id="probadorTag">Probador 3D</div>
       <h2 class="section-title" id="probadorTitle">CATALOGO<br><span class="dim">3D</span></h2>
     </div>
+    <div><button class="btn-ghost" id="openOutfitBtn">Combinar outfit →</button></div>
   </div>
   <div class="filter-bar reveal" data-delay="1" id="ropaFilterBar" style="display:none;">
     <button class="filter-btn active" data-cat="all">Todas</button>
@@ -1173,11 +1218,30 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="outfitModalOverlay">
+  <div class="modal om-modal" id="outfitModal">
+    <button class="modal-close" id="outfitModalClose" aria-label="Cerrar">✕</button>
+    <div class="om-grid">
+      <div class="om-viewer-wrap">
+        <canvas id="omCanvas"></canvas>
+        <div class="om-hint" id="omHint">Elige prendas →<br>para armar tu outfit</div>
+        <div class="om-bar">
+          <button class="cb-btn on" id="omSpin">⟳ Girar</button>
+          <button class="cb-btn" id="omClear">Limpiar</button>
+        </div>
+      </div>
+      <aside class="om-side">
+        <div class="om-count"><span id="omCount">0</span>/8 en tu outfit</div>
+        <div id="omTray"></div>
+        <div class="om-sub">Prendas</div>
+        <div id="omAvail"></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<!-- OUTFIT PILL -->
-<a id="outfitPill" class="outfit-pill" href="combinar/" style="display:none;">👕 Ver outfit (<span id="outfitCount">0</span>) →</a>
 
 <!-- MUSIC PLAYER -->
 <div class="music-player pos-br paused" id="musicPlayer" style="display:none;">
@@ -1867,7 +1931,6 @@ function renderRopaGrid(filterCat) {
             ${p.precio ? `<span class="script-price">${escHTML(p.precio)}</span>` : ''}
           </div>
           <span class="script-btn">${hasGlb ? 'Ver en 3D →' : 'Ver detalle'}</span>
-          ${hasGlb ? `<button class="ropa-combine${inOutfit(p.id) ? ' on' : ''}" data-combine="${escHTML(p.id)}">${inOutfit(p.id) ? '✓ En outfit' : '＋ Combinar'}</button>` : ''}
         </div>
       </article>`;
   }).join('');
@@ -1878,9 +1941,6 @@ function renderRopaGrid(filterCat) {
       card.addEventListener('mouseenter', () => { mv.autoRotate = true; });
       card.addEventListener('mouseleave', () => { mv.autoRotate = false; });
     }
-  });
-  grid.querySelectorAll('[data-combine]').forEach(b => {
-    b.addEventListener('click', e => { e.stopPropagation(); toggleOutfit(b.dataset.combine); });
   });
   grid.querySelectorAll('model-viewer.ropa-card-viewer').forEach(mv => {
     mv.addEventListener('load', () => applyRopaMaterialFix(mv), { once: true });
@@ -2885,5 +2945,226 @@ loadRopa();
 updateOutfitPill();
 resumePendingPurchase();
 checkAuthReturn();</script>
+
+<script type="module">
+// Vestidor outfit en modal (Three.js, carga diferida al abrir)
+const OM_MAX = 8;
+const OM_SLOT_LABEL = { torso: 'Torso', piernas: 'Piernas', brazos: 'Brazos', cabeza: 'Cabeza', pies: 'Pies', manos: 'Manos', accesorio: 'Accesorio' };
+const omSlotLabel = s => (s && OM_SLOT_LABEL[s]) || 'Extra';
+const OM_LS = 'xkt_outfit';
+let omCatalog = [];
+let omEquipped = [];
+let omThree = null;
+let omOpen = false;
+
+function omGetLS() {
+  try { const o = JSON.parse(localStorage.getItem(OM_LS)); return Array.isArray(o) ? o.map(String) : []; }
+  catch (e) { return []; }
+}
+function omSetLS() { try { localStorage.setItem(OM_LS, JSON.stringify(omEquipped)); } catch (e) {} }
+function omItem(id) { return omCatalog.find(x => String(x.id) === String(id)); }
+function omName(it) {
+  if (it.nombre) return it.nombre;
+  const base = String(it.glb || it.id).split('/').pop().replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ').trim();
+  return base || it.id;
+}
+
+async function omEnsureThree() {
+  if (omThree) return omThree;
+  const THREE = await import('three');
+  const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+  const canvas = document.getElementById('omCanvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+  const scene = new THREE.Scene();
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
+  camera.position.set(0.9, 1.4, 2.6);
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.enablePan = false;
+  controls.minPolarAngle = THREE.MathUtils.degToRad(60);
+  controls.maxPolarAngle = THREE.MathUtils.degToRad(92);
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.4;
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  key.position.set(2.5, 4, 3.5);
+  scene.add(key);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x221133, 0.5));
+  const outfit = new THREE.Group();
+  scene.add(outfit);
+  omThree = { THREE, scene, camera, renderer, controls, outfit, loader: new GLTFLoader(), cache: new Map() };
+  (function loop() {
+    requestAnimationFrame(loop);
+    if (!omOpen) return;
+    controls.update();
+    renderer.render(scene, camera);
+  })();
+  window.addEventListener('resize', () => { if (omOpen) omResize(); });
+  return omThree;
+}
+
+function omFixMaterials(root) {
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+      if (!m) return;
+      m.transparent = false;
+      m.opacity = 1;
+      m.depthWrite = true;
+      m.alphaTest = 0;
+      if ('roughness' in m) m.roughness = 1;
+      if ('metalness' in m) m.metalness = 0;
+      if ('transmission' in m) m.transmission = 0;
+      if ('thickness' in m) m.thickness = 0;
+      if ('clearcoat' in m) m.clearcoat = 0;
+      if ('clearcoatRoughness' in m) m.clearcoatRoughness = 1;
+      if ('sheen' in m) m.sheen = 0;
+      if ('specularIntensity' in m) m.specularIntensity = 0;
+      m.needsUpdate = true;
+    });
+  });
+}
+
+async function omLoad(item) {
+  const T = omThree;
+  if (T.cache.has(item.id)) return T.cache.get(item.id);
+  const p = T.loader.loadAsync(item.glb)
+    .then(g => { omFixMaterials(g.scene); return g.scene; })
+    .catch(() => null);
+  T.cache.set(item.id, p);
+  return p;
+}
+
+async function omRefresh() {
+  const T = omThree;
+  document.getElementById('omCount').textContent = omEquipped.length;
+  document.getElementById('omHint').style.display = omEquipped.length ? 'none' : '';
+  const tray = document.getElementById('omTray');
+  tray.innerHTML = omEquipped.length ? omEquipped.map(id => {
+    const it = omItem(id);
+    const nm = it ? omName(it) : id;
+    return '<span class="cb-chip">' + nm + ' <small>' + (it && it.slot ? omSlotLabel(it.slot) : '') + '</small><button data-omun="' + id + '">✕</button></span>';
+  }).join('') : '<span class="cb-empty-tray">Vacío por ahora.</span>';
+  tray.querySelectorAll('[data-omun]').forEach(b => b.addEventListener('click', () => omToggle(b.dataset.omun)));
+  while (T.outfit.children.length) T.outfit.remove(T.outfit.children[0]);
+  if (!omEquipped.length) return;
+  for (const id of omEquipped) {
+    const it = omItem(id);
+    if (!it || !it.glb) continue;
+    const s = await omLoad(it);
+    if (s) T.outfit.add(s.clone(true));
+  }
+  omFit();
+}
+
+function omFit() {
+  const T = omThree;
+  const box = new T.THREE.Box3().setFromObject(T.outfit);
+  if (box.isEmpty()) return;
+  const center = box.getCenter(new T.THREE.Vector3());
+  const size = box.getSize(new T.THREE.Vector3());
+  const radius = Math.max(size.x, size.y, size.z);
+  T.controls.target.copy(center);
+  const dir = new T.THREE.Vector3(0.55, 0.3, 1).normalize();
+  T.camera.position.copy(center).addScaledVector(dir, radius * 1.9);
+  T.camera.near = Math.max(0.01, radius / 100);
+  T.camera.far = radius * 20;
+  T.camera.updateProjectionMatrix();
+  T.controls.minDistance = radius * 0.6;
+  T.controls.maxDistance = radius * 4;
+}
+
+function omRenderSide() {
+  const avail = document.getElementById('omAvail');
+  const cats = [];
+  omCatalog.forEach(it => {
+    const c = it.categoria || 'Prendas';
+    let g = cats.find(x => x.name === c);
+    if (!g) { g = { name: c, items: [] }; cats.push(g); }
+    g.items.push(it);
+  });
+  avail.innerHTML = cats.map(g =>
+    '<div class="om-cat">' + g.name + '</div>' + g.items.map(it => {
+      const on = omEquipped.includes(String(it.id));
+      return '<div class="cb-item"><div><div class="nm">' + omName(it) + '</div><div class="sl">' + (it.slot ? omSlotLabel(it.slot) : (it.categoria || 'Prenda')) + '</div></div><button class="cb-toggle' + (on ? ' on' : '') + '" data-omtg="' + it.id + '">' + (on ? '✓ Puesta' : '＋ Poner') + '</button></div>';
+    }).join('')
+  ).join('');
+  avail.querySelectorAll('[data-omtg]').forEach(b => b.addEventListener('click', () => omToggle(b.dataset.omtg)));
+}
+
+function omToggle(id) {
+  id = String(id);
+  const item = omItem(id);
+  if (omEquipped.includes(id)) {
+    omEquipped = omEquipped.filter(x => x !== id);
+  } else {
+    if (item && item.slot) {
+      omEquipped = omEquipped.filter(x => {
+        const it = omItem(x);
+        return !(it && it.slot && it.slot === item.slot);
+      });
+    }
+    omEquipped = [...omEquipped, id];
+    if (omEquipped.length > OM_MAX) omEquipped = omEquipped.slice(omEquipped.length - OM_MAX);
+  }
+  omSetLS();
+  omRenderSide();
+  omRefresh();
+}
+
+function omResize() {
+  if (!omThree) return;
+  const c = document.getElementById('omCanvas');
+  const w = c.clientWidth, h = c.clientHeight;
+  if (!w || !h) return;
+  omThree.renderer.setSize(w, h, false);
+  omThree.camera.aspect = w / h;
+  omThree.camera.updateProjectionMatrix();
+}
+
+async function openOutfitModal() {
+  document.getElementById('outfitModalOverlay').classList.add('open');
+  document.body.classList.add('no-scroll');
+  omOpen = true;
+  if (!omCatalog.length) {
+    try { omCatalog = await (await fetch('ropa/catalogo.json', { cache: 'no-store' })).json(); }
+    catch (e) { omCatalog = []; }
+  }
+  omEquipped = omGetLS().filter(id => omCatalog.some(x => String(x.id) === String(id))).slice(0, OM_MAX);
+  await omEnsureThree();
+  omResize();
+  omRenderSide();
+  await omRefresh();
+  omResize();
+}
+function closeOutfitModal() {
+  omOpen = false;
+  document.getElementById('outfitModalOverlay').classList.remove('open');
+  document.body.classList.remove('no-scroll');
+}
+document.getElementById('openOutfitBtn').addEventListener('click', openOutfitModal);
+document.getElementById('outfitModalClose').addEventListener('click', closeOutfitModal);
+document.getElementById('outfitModalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('outfitModalOverlay')) closeOutfitModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOutfitModal(); });
+document.getElementById('omSpin').addEventListener('click', e => {
+  if (!omThree) return;
+  omThree.controls.autoRotate = !omThree.controls.autoRotate;
+  e.currentTarget.classList.toggle('on', omThree.controls.autoRotate);
+});
+document.getElementById('omClear').addEventListener('click', () => {
+  omEquipped = [];
+  omSetLS();
+  omRenderSide();
+  omRefresh();
+});
+</script>
 </body>
 </html>
