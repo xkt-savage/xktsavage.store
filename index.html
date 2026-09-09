@@ -889,6 +889,16 @@
   .dc-empty svg { width: 52px; height: 52px; }
   .discord-fallback { text-align: center; margin-top: 14px; }
 
+  /* CURSOR + ESTELA */
+  @media (pointer: fine) {
+    body, a, button, .script-card, model-viewer { cursor: url('img/cursor.png') 16 16, auto; }
+  }
+  .trail-dot { position: fixed; z-index: 2000; pointer-events: none; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,140,255,0.9), rgba(147,51,234,0) 70%);
+    transform: translate(-50%,-50%) scale(1); opacity: 0.9;
+    transition: transform .6s ease-out, opacity .6s ease-out; }
+  .trail-dot.go { transform: translate(-50%,-50%) scale(0.1); opacity: 0; }
+
   /* RESPONSIVE */
   @media (max-width: 900px) {
     nav { padding: 0 20px; }
@@ -2137,6 +2147,29 @@ onScroll();
 const burger = document.getElementById('navBurger');
 burger.addEventListener('click', () => nav.classList.toggle('menu-open'));
 document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => nav.classList.remove('menu-open')));
+
+// Estela morada del cursor (solo puntero fino, sin movimiento reducido)
+(function cursorTrail() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let last = 0;
+  document.addEventListener('mousemove', e => {
+    const now = performance.now();
+    if (now - last < 28) return;
+    last = now;
+    const s = document.createElement('span');
+    s.className = 'trail-dot';
+    const sz = 6 + Math.random() * 8;
+    s.style.width = s.style.height = sz + 'px';
+    s.style.left = e.clientX + 'px';
+    s.style.top = e.clientY + 'px';
+    document.body.appendChild(s);
+    requestAnimationFrame(() => s.classList.add('go'));
+    setTimeout(() => s.remove(), 650);
+    const dots = document.querySelectorAll('.trail-dot');
+    if (dots.length > 60) dots[0].remove();
+  }, { passive: true });
+})();
 
 // Scroll reveal (reusable observer)
 const revealObserver = new IntersectionObserver((entries) => {
