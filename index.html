@@ -2157,7 +2157,7 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
 (function cursorTrail() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let lx = null, ly = null, n = 0;
+  let lx = null, ly = null, n = 0, mvx = 0, mvy = 0;
   const spawn = (x, y) => {
     n++;
     const star = (n % 3 === 0) || Math.random() < 0.25;
@@ -2165,9 +2165,9 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
     s.className = 'trail-spark ' + (star ? 'star' : 'dot');
     const sz = star ? 7 + Math.random() * 6 : 3 + Math.random() * 5;
     const dur = 0.9 + Math.random() * 0.7;
-    const vx = (Math.random() - 0.5) * 30;
-    const vy = -(15 + Math.random() * 35);
-    const rx = vx * dur, ry = vy * dur;
+    const f = 0.3 + Math.random() * 0.7;
+    const rx = mvx * f * 1.4 + (Math.random() - 0.5) * 14;
+    const ry = mvy * f * 1.4 + (Math.random() - 0.5) * 14;
     s.style.width = s.style.height = sz + 'px';
     s.style.left = x + 'px';
     s.style.top = y + 'px';
@@ -2184,6 +2184,8 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
     if (lx === null) { lx = e.clientX; ly = e.clientY; spawn(e.clientX, e.clientY); return; }
     const dist = Math.hypot(e.clientX - lx, e.clientY - ly);
     if (dist < 7) return;
+    mvx = mvx * 0.7 + (e.clientX - lx) * 0.3;
+    mvy = mvy * 0.7 + (e.clientY - ly) * 0.3;
     lx = e.clientX; ly = e.clientY;
     if (Math.random() < 0.45) return;
     const steps = Math.min(4, Math.max(1, Math.floor(dist / 14)));
