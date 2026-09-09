@@ -2163,10 +2163,10 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
     const s = document.createElement('span');
     s.className = 'trail-spark ' + (star ? 'star' : 'dot');
     const sz = star ? 7 + Math.random() * 6 : 3 + Math.random() * 5;
-    const dur = 0.35 + Math.random() * 0.5;
-    const sp = 15 + Math.random() * 45;
-    const a = Math.random() * Math.PI * 2;
-    const rx = Math.cos(a) * sp * dur, ry = Math.sin(a) * sp * dur;
+    const dur = 0.9 + Math.random() * 0.7;
+    const vx = (Math.random() - 0.5) * 30;
+    const vy = -(15 + Math.random() * 35);
+    const rx = vx * dur, ry = vy * dur;
     s.style.width = s.style.height = sz + 'px';
     s.style.left = x + 'px';
     s.style.top = y + 'px';
@@ -2177,7 +2177,7 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
       s.style.transform = `translate(calc(-50% + ${rx}px), calc(-50% + ${ry}px)) scale(0)`;
       s.classList.add('go');
     }));
-    setTimeout(() => s.remove(), dur * 1000 + 60);
+    setTimeout(() => s.remove(), dur * 1000 + 80);
   };
   document.addEventListener('mousemove', e => {
     if (lx === null) { lx = e.clientX; ly = e.clientY; spawn(e.clientX, e.clientY); return; }
@@ -2190,7 +2190,7 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
     }
     lx = e.clientX; ly = e.clientY;
     const all = document.querySelectorAll('.trail-spark');
-    if (all.length > 90) for (let i = 0; i < all.length - 90; i++) all[i].remove();
+    if (all.length > 110) for (let i = 0; i < all.length - 110; i++) all[i].remove();
   }, { passive: true });
 })();
 
