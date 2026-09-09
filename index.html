@@ -808,19 +808,19 @@
   .cb-toggle:hover { border-color: var(--purple); }
   .cb-toggle.on { background: var(--grad-red); border-color: transparent; color: #fff; }
   #outfitModalOverlay { background: rgba(10,10,12,0.25); backdrop-filter: blur(22px) saturate(130%); -webkit-backdrop-filter: blur(22px) saturate(130%); }
-  #outfitModal { max-width: 1450px; background: transparent; border: none; box-shadow: none; }
+  #outfitModal { max-width: min(96vw, 1750px); background: transparent; border: none; box-shadow: none; }
   #outfitModalClose { background: transparent; border: none; font-size: 30px; color: var(--muted); width: 48px; height: 48px; }
   #outfitModalClose:hover { background: transparent; border: none; color: #fff; }
   .om-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
-  .om-viewer-wrap { position: relative; min-height: 70vh; border-radius: 12px; overflow: hidden;
+  .om-viewer-wrap { position: relative; min-height: 78vh; border-radius: 12px; overflow: hidden;
     background: radial-gradient(circle at 50% 40%, rgba(147,51,234,0.07), transparent 70%); }
-  #omCanvas { width: 100%; height: 70vh; min-height: 480px; display: block; touch-action: none; cursor: grab; }
+  #omCanvas { width: 100%; height: 78vh; min-height: 520px; display: block; touch-action: none; cursor: grab; }
   #omCanvas:active { cursor: grabbing; }
   .om-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
     font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-size: 14px;
     padding: 20px; pointer-events: none; text-shadow: 0 2px 20px rgba(0,0,0,0.85); }
   .om-bar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
-  .om-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-height: 76vh; overflow-y: auto; padding-right: 4px; }
+  .om-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-height: 82vh; overflow-y: auto; padding-right: 4px; }
   .om-count { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
     color: var(--muted); text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
   #omTray { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -3078,7 +3078,7 @@ function omFit() {
   const maxDim = Math.max(size.x, size.y, size.z);
   const fov = T.THREE.MathUtils.degToRad(T.camera.fov);
   const fitH = maxDim / (2 * Math.tan(fov / 2));
-  const dist = Math.max(fitH, fitH / T.camera.aspect) * 1.2;
+  const dist = Math.max(fitH, fitH / T.camera.aspect) * 1.12;
   T.controls.target.copy(center);
   const dir = new T.THREE.Vector3(0.55, 0.3, 1).normalize();
   T.camera.position.copy(center).addScaledVector(dir, dist);
