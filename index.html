@@ -2157,7 +2157,7 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
     const s = document.createElement('span');
     s.className = 'trail-neon';
     s.style.width = w + 'px';
-    s.style.height = '7px';
+    s.style.height = '5px';
     s.style.left = x + 'px';
     s.style.top = y + 'px';
     s.style.transform = `translate(-50%,-50%) rotate(${angle}rad)`;
@@ -2174,8 +2174,7 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
     const steps = Math.min(16, Math.max(1, Math.floor(dist / 5)));
     for (let i = 1; i <= steps; i++) {
       const t = i / steps;
-      const w = 12 + Math.min(34, dist * 0.9) * (1 - t * 0.4);
-      stamp(lx + dx * t, ly + dy * t, angle, w);
+      stamp(lx + dx * t, ly + dy * t, angle, 20);
     }
     lx = e.clientX; ly = e.clientY;
     const all = document.querySelectorAll('.trail-neon');
