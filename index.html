@@ -808,19 +808,19 @@
   .cb-toggle:hover { border-color: var(--purple); }
   .cb-toggle.on { background: var(--grad-red); border-color: transparent; color: #fff; }
   #outfitModalOverlay { background: rgba(10,10,12,0.25); backdrop-filter: blur(22px) saturate(130%); -webkit-backdrop-filter: blur(22px) saturate(130%); }
-  #outfitModal { max-width: 1300px; background: transparent; border: none; box-shadow: none; }
+  #outfitModal { max-width: 1450px; background: transparent; border: none; box-shadow: none; }
   #outfitModalClose { background: transparent; border: none; font-size: 30px; color: var(--muted); width: 48px; height: 48px; }
   #outfitModalClose:hover { background: transparent; border: none; color: #fff; }
   .om-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
-  .om-viewer-wrap { position: relative; min-height: 60vh; border-radius: 12px; overflow: hidden;
+  .om-viewer-wrap { position: relative; min-height: 70vh; border-radius: 12px; overflow: hidden;
     background: radial-gradient(circle at 50% 40%, rgba(147,51,234,0.07), transparent 70%); }
-  #omCanvas { width: 100%; height: 60vh; min-height: 400px; display: block; touch-action: none; cursor: grab; }
+  #omCanvas { width: 100%; height: 70vh; min-height: 480px; display: block; touch-action: none; cursor: grab; }
   #omCanvas:active { cursor: grabbing; }
   .om-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
     font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-size: 14px;
     padding: 20px; pointer-events: none; text-shadow: 0 2px 20px rgba(0,0,0,0.85); }
   .om-bar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
-  .om-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-height: 68vh; overflow-y: auto; padding-right: 4px; }
+  .om-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-height: 76vh; overflow-y: auto; padding-right: 4px; }
   .om-count { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
     color: var(--muted); text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
   #omTray { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -828,6 +828,12 @@
     color: var(--muted); margin-top: 6px; text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
   .om-cat { font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
     color: var(--purple); margin: 8px 0 2px; text-shadow: 0 2px 12px rgba(0,0,0,0.85); }
+  details.om-group summary.om-cat { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+  details.om-group summary.om-cat::-webkit-details-marker { display: none; }
+  details.om-group summary.om-cat::before { content: '▸'; transition: transform .2s; }
+  details.om-group[open] summary.om-cat::before { transform: rotate(90deg); }
+  .om-thumb { width: 62px; height: 62px; flex-shrink: 0; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.03); }
+  .om-thumb model-viewer { width: 100%; height: 100%; pointer-events: none; --poster-color: transparent; }
   #omAvail { display: flex; flex-direction: column; gap: 8px; }
   @media (max-width: 900px) {
     .om-grid { grid-template-columns: 1fr; }
@@ -3069,15 +3075,18 @@ function omFit() {
   if (box.isEmpty()) return;
   const center = box.getCenter(new T.THREE.Vector3());
   const size = box.getSize(new T.THREE.Vector3());
-  const radius = Math.max(size.x, size.y, size.z);
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const fov = T.THREE.MathUtils.degToRad(T.camera.fov);
+  const fitH = maxDim / (2 * Math.tan(fov / 2));
+  const dist = Math.max(fitH, fitH / T.camera.aspect) * 1.2;
   T.controls.target.copy(center);
   const dir = new T.THREE.Vector3(0.55, 0.3, 1).normalize();
-  T.camera.position.copy(center).addScaledVector(dir, radius * 1.9);
-  T.camera.near = Math.max(0.01, radius / 100);
-  T.camera.far = radius * 20;
+  T.camera.position.copy(center).addScaledVector(dir, dist);
+  T.camera.near = Math.max(0.01, dist / 100);
+  T.camera.far = dist * 20;
   T.camera.updateProjectionMatrix();
-  T.controls.minDistance = radius * 0.6;
-  T.controls.maxDistance = radius * 4;
+  T.controls.minDistance = dist * 0.4;
+  T.controls.maxDistance = dist * 3;
 }
 
 function omRenderSide() {
@@ -3090,10 +3099,11 @@ function omRenderSide() {
     g.items.push(it);
   });
   avail.innerHTML = cats.map(g =>
-    '<div class="om-cat">' + g.name + '</div>' + g.items.map(it => {
+    '<details class="om-group" open><summary class="om-cat">' + g.name + ' (' + g.items.length + ')</summary>' + g.items.map(it => {
       const on = omEquipped.includes(String(it.id));
-      return '<div class="cb-item"><div><div class="nm">' + omName(it) + '</div><div class="sl">' + (it.slot ? omSlotLabel(it.slot) : (it.categoria || 'Prenda')) + '</div></div><button class="cb-toggle' + (on ? ' on' : '') + '" data-omtg="' + it.id + '">' + (on ? '✓ Puesta' : '＋ Poner') + '</button></div>';
-    }).join('')
+      const thumb = it.glb ? '<div class="om-thumb"><model-viewer src="' + it.glb + '" loading="lazy" shadow-intensity="1" exposure="1.1" interaction-prompt="none"></model-viewer></div>' : '';
+      return '<div class="cb-item">' + thumb + '<div><div class="nm">' + omName(it) + '</div><div class="sl">' + (it.slot ? omSlotLabel(it.slot) : (it.categoria || 'Prenda')) + '</div></div><button class="cb-toggle' + (on ? ' on' : '') + '" data-omtg="' + it.id + '">' + (on ? '✓ Puesta' : '＋ Poner') + '</button></div>';
+    }).join('') + '</details>'
   ).join('');
   avail.querySelectorAll('[data-omtg]').forEach(b => b.addEventListener('click', () => omToggle(b.dataset.omtg)));
 }
