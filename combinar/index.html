@@ -259,12 +259,12 @@ async function refreshOutfit() {
 function fitCamera() {
   const box = new THREE.Box3().setFromObject(outfit);
   if (box.isEmpty()) return;
-  const center = new THREE.Vector3(0, 0.95, 0);
+  const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
   const fov = THREE.MathUtils.degToRad(camera.fov);
   const fitH = maxDim / (2 * Math.tan(fov / 2));
-  const dist = box.isEmpty() ? 2.6 : Math.max(fitH, fitH / camera.aspect) * 1.12;
+  const dist = Math.max(fitH, fitH / camera.aspect) * 1.12;
   controls.target.copy(center);
   const dir = camera.position.clone().sub(center);
   if (dir.lengthSq() < 1e-6) dir.set(0.55, 0.3, 1);
