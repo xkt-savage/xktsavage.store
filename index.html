@@ -6,6 +6,7 @@
 <title>XKT SAVAGE — Ropa & Props FiveM</title>
 <meta name="description" content="XKT SAVAGE — Prendas, props y contenido custom para servidores FiveM serios. Calidad premium y diseños exclusivos.">
 <meta name="theme-color" content="#0a0a0c">
+<link rel="icon" type="image/png" href="img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=Permanent+Marker&display=swap" rel="stylesheet">
@@ -2183,6 +2184,8 @@ document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click
     if (lx === null) { lx = e.clientX; ly = e.clientY; spawn(e.clientX, e.clientY); return; }
     const dist = Math.hypot(e.clientX - lx, e.clientY - ly);
     if (dist < 7) return;
+    lx = e.clientX; ly = e.clientY;
+    if (Math.random() < 0.45) return;
     const steps = Math.min(4, Math.max(1, Math.floor(dist / 14)));
     for (let i = 1; i <= steps; i++) {
       const t = i / steps;
