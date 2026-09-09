@@ -3002,7 +3002,7 @@ async function omEnsureThree() {
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
   const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
-  camera.position.set(0.9, 1.4, 2.6);
+  camera.position.set(0, 1.1, 2.8);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.enablePan = false;
@@ -3087,13 +3087,14 @@ function omFit() {
   if (box.isEmpty()) return;
   const center = box.getCenter(new T.THREE.Vector3());
   const size = box.getSize(new T.THREE.Vector3());
+  center.y -= size.y * 0.12;
   const maxDim = Math.max(size.x, size.y, size.z);
   const fov = T.THREE.MathUtils.degToRad(T.camera.fov);
   const fitH = maxDim / (2 * Math.tan(fov / 2));
   const dist = Math.max(fitH, fitH / T.camera.aspect) * 1.12;
   T.controls.target.copy(center);
   const dir = T.camera.position.clone().sub(center);
-  if (dir.lengthSq() < 1e-6) dir.set(0.55, 0.3, 1);
+  if (dir.lengthSq() < 1e-6) dir.set(0, 0.08, 1);
   dir.normalize();
   T.camera.position.copy(center).addScaledVector(dir, dist);
   T.camera.near = Math.max(0.01, dist / 100);
