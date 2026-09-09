@@ -893,11 +893,15 @@
   @media (pointer: fine) {
     body, a, button, .script-card, model-viewer { cursor: url('img/cursor.png') 12 12, auto; }
   }
-  .trail-neon { position: fixed; z-index: 2000; pointer-events: none; border-radius: 100px;
-    background: linear-gradient(90deg, rgba(233,213,255,0.95), rgba(168,85,247,0.55));
-    box-shadow: 0 0 10px 2px rgba(168,85,247,0.8), 0 0 26px 8px rgba(147,51,234,0.45);
-    opacity: 0.9; transition: opacity .2s ease-out; }
-  .trail-neon.go { opacity: 0; }
+  .trail-spark { position: fixed; z-index: 2000; pointer-events: none; opacity: 1;
+    transition: opacity .4s ease-out, transform .4s ease-out; }
+  .trail-spark.dot { border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, #c084fc 55%, rgba(147,51,234,0) 75%);
+    box-shadow: 0 0 6px 1px rgba(168,85,247,0.9); }
+  .trail-spark.star { background: linear-gradient(135deg, #fff, #c084fc);
+    clip-path: polygon(50% 0%, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0% 50%, 38% 38%);
+    filter: drop-shadow(0 0 5px rgba(168,85,247,0.95)); }
+  .trail-spark.go { opacity: 0; }
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
@@ -2148,37 +2152,41 @@ const burger = document.getElementById('navBurger');
 burger.addEventListener('click', () => nav.classList.toggle('menu-open'));
 document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => nav.classList.remove('menu-open')));
 
-// Estela neón del cursor (solo puntero fino, sin movimiento reducido)
+// Brillitos del cursor (solo puntero fino, sin movimiento reducido)
 (function cursorTrail() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let lx = null, ly = null;
-  const stamp = (x, y, angle, w) => {
+  let lx = null, ly = null, n = 0;
+  const spawn = (x, y) => {
+    n++;
+    const star = (n % 3 === 0) || Math.random() < 0.25;
     const s = document.createElement('span');
-    s.className = 'trail-neon';
-    s.style.width = w + 'px';
-    s.style.height = '4px';
+    s.className = 'trail-spark ' + (star ? 'star' : 'dot');
+    const sz = star ? 7 + Math.random() * 6 : 3 + Math.random() * 5;
+    const rx = (Math.random() - 0.5) * 26, ry = (Math.random() - 0.5) * 26;
+    s.style.width = s.style.height = sz + 'px';
     s.style.left = x + 'px';
     s.style.top = y + 'px';
-    s.style.transform = `translate(-50%,-50%) rotate(${angle}rad)`;
+    s.style.transform = 'translate(-50%,-50%) scale(1)';
     document.body.appendChild(s);
-    requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add('go')));
-    setTimeout(() => s.remove(), 220);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      s.style.transform = `translate(calc(-50% + ${rx}px), calc(-50% + ${ry}px)) scale(0)`;
+      s.classList.add('go');
+    }));
+    setTimeout(() => s.remove(), 450);
   };
   document.addEventListener('mousemove', e => {
-    if (lx === null) { lx = e.clientX; ly = e.clientY; return; }
-    const dx = e.clientX - lx, dy = e.clientY - ly;
-    const dist = Math.hypot(dx, dy);
-    if (dist < 4) return;
-    const angle = Math.atan2(dy, dx);
-    const steps = Math.min(16, Math.max(1, Math.floor(dist / 5)));
+    if (lx === null) { lx = e.clientX; ly = e.clientY; spawn(e.clientX, e.clientY); return; }
+    const dist = Math.hypot(e.clientX - lx, e.clientY - ly);
+    if (dist < 7) return;
+    const steps = Math.min(4, Math.max(1, Math.floor(dist / 14)));
     for (let i = 1; i <= steps; i++) {
       const t = i / steps;
-      stamp(lx + dx * t, ly + dy * t, angle, 16);
+      spawn(lx + (e.clientX - lx) * t, ly + (e.clientY - ly) * t);
     }
     lx = e.clientX; ly = e.clientY;
-    const all = document.querySelectorAll('.trail-neon');
-    if (all.length > 100) for (let i = 0; i < all.length - 100; i++) all[i].remove();
+    const all = document.querySelectorAll('.trail-spark');
+    if (all.length > 90) for (let i = 0; i < all.length - 90; i++) all[i].remove();
   }, { passive: true });
 })();
 
