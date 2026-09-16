@@ -923,12 +923,12 @@
   }
 
   /* ============ INTRO (hero con GIF + partículas redondas) ============ */
-  /* Cursor: patita de gato (navegar / click) */
-  body, a, button, [role="button"] {
-    cursor: url("img/paw_nav.png") 104 2, auto;
+  /* Cursor: patita de gato (navegar / click) - forzado en todos los elementos */
+  *, *::before, *::after {
+    cursor: url("img/paw_nav.png") 26 1, auto !important;
   }
-  body.clicking, body.clicking a, body.clicking button, body.clicking [role="button"] {
-    cursor: url("img/paw_click.png") 27 2, auto;
+  body.clicking, body.clicking *, body.clicking *::before, body.clicking *::after {
+    cursor: url("img/paw_click.png") 6 1, auto !important;
   }
 
   #intro {
@@ -941,6 +941,7 @@
   #introCanvas { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
   .intro-vignette {
     position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(89,0,255,0.08) 0%, transparent 55%);
   }
   .intro-gif {
     position: relative; z-index: 3;
@@ -3325,7 +3326,7 @@ document.getElementById('omClear').addEventListener('click', () => {
 });
 </script>
 
-<!-- INTRO: partículas redondas + botón entrar -->
+<!-- INTRO: bola mágica morada (estilo magic ball sparkles) detrás del GIF -->
 <script type="module">
   import * as THREE from 'three';
 
@@ -3344,53 +3345,71 @@ document.getElementById('omClear').addEventListener('click', () => {
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
     camera.position.set(0, 0, 14);
 
-    // Textura circular suave (partículas redondas)
+    // Textura de chispa suave
     const s = 128;
     const cv = document.createElement('canvas'); cv.width = s; cv.height = s;
     const ctx = cv.getContext('2d');
     const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
     g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.35, 'rgba(255,255,255,0.75)');
+    g.addColorStop(0.3, 'rgba(255,255,255,0.8)');
     g.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.arc(s/2, s/2, s/2, 0, Math.PI * 2); ctx.fill();
-    const dotTex = new THREE.CanvasTexture(cv);
+    const sparkTex = new THREE.CanvasTexture(cv);
 
+    // ===== Núcleo brillante (bola mágica) =====
+    const coreGeo = new THREE.SphereGeometry(2.1, 48, 48);
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: 0x5900FF, transparent: true, opacity: 0.16,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    const core = new THREE.Mesh(coreGeo, coreMat);
+    scene.add(core);
+
+    // Resplandor exterior
+    const glowGeo = new THREE.SphereGeometry(3.4, 32, 32);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: 0x8b5cff, transparent: true, opacity: 0.07,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    const glow = new THREE.Mesh(glowGeo, glowMat);
+    scene.add(glow);
+
+    // ===== Chispas caóticas orbitando la bola =====
+    const sparkCount = 340;
+    const positions = new Float32Array(sparkCount * 3);
+    const colors = new Float32Array(sparkCount * 3);
+    const phases = new Float32Array(sparkCount);
+    const speeds = new Float32Array(sparkCount);
+    const radii = new Float32Array(sparkCount);
+    const ySpeeds = new Float32Array(sparkCount);
     const palette = [
       new THREE.Color(0x5900FF), new THREE.Color(0xa855f7),
       new THREE.Color(0xd946ef), new THREE.Color(0xc084fc), new THREE.Color(0xffffff),
     ];
-    const count = 210;
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    const base = new Float32Array(count * 3);
-    const phases = new Float32Array(count);
-    const speeds = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      // Distribución uniforme en una elipse amplia (sin amontonar al centro)
+    for (let i = 0; i < sparkCount; i++) {
       const ang = Math.random() * Math.PI * 2;
-      const rad = Math.sqrt(Math.random()) * 16;
-      const x = Math.cos(ang) * rad * 1.35;
-      const y = Math.sin(ang) * rad * 0.85;
-      const z = (Math.random() - 0.5) * 18 - 4;
-      positions[i*3] = base[i*3] = x;
-      positions[i*3 + 1] = base[i*3 + 1] = y;
-      positions[i*3 + 2] = base[i*3 + 2] = z;
+      const rad = 2.2 + Math.random() * 3.4;
+      positions[i*3]     = Math.cos(ang) * rad;
+      positions[i*3 + 1] = (Math.random() - 0.5) * 3.2;
+      positions[i*3 + 2] = Math.sin(ang) * rad;
       phases[i] = Math.random() * Math.PI * 2;
-      speeds[i] = 0.55 + Math.random() * 0.9;
+      speeds[i] = 0.5 + Math.random() * 1.4;
+      radii[i] = rad;
+      ySpeeds[i] = (Math.random() - 0.5) * 1.6;
       const c = palette[Math.floor(Math.random() * palette.length)];
       colors[i*3] = c.r; colors[i*3 + 1] = c.g; colors[i*3 + 2] = c.b;
     }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    const mat = new THREE.PointsMaterial({
-      size: 0.5, sizeAttenuation: true, map: dotTex, vertexColors: true,
+    const sparkGeo = new THREE.BufferGeometry();
+    sparkGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    sparkGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const sparkMat = new THREE.PointsMaterial({
+      size: 0.26, sizeAttenuation: true, map: sparkTex, vertexColors: true,
       transparent: true, opacity: 1.0, blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
-    const points = new THREE.Points(geo, mat);
-    scene.add(points);
+    const sparks = new THREE.Points(sparkGeo, sparkMat);
+    scene.add(sparks);
 
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     window.addEventListener('mousemove', (e) => {
@@ -3416,21 +3435,34 @@ document.getElementById('omClear').addEventListener('click', () => {
       const t = clock.getElapsedTime();
       mouse.x += (mouse.tx - mouse.x) * 0.04;
       mouse.y += (mouse.ty - mouse.y) * 0.04;
-      // Movimiento libre: cada partícula flota a su propia velocidad (10% mas lento)
-      for (let i = 0; i < count; i++) {
+
+      // Bola: respiración + rotación lenta
+      const pulse = 1 + Math.sin(t * 1.4) * 0.09;
+      core.scale.setScalar(pulse);
+      glow.scale.setScalar(1 + Math.sin(t * 1.4 + 1.2) * 0.14);
+      core.rotation.y = t * 0.12;
+      core.rotation.x = t * 0.06;
+      glow.rotation.y = -t * 0.08;
+
+      // Chispas: órbita caótica + flotación vertical + parpadeo de tamaño
+      const pos = sparkGeo.attributes.position.array;
+      for (let i = 0; i < sparkCount; i++) {
         const ph = phases[i];
         const sp = speeds[i];
-        positions[i*3]     = base[i*3]     + Math.sin(t * 0.81 * sp + ph) * 2.2;
-        positions[i*3 + 1] = base[i*3 + 1] + Math.sin(t * 0.63 * sp + ph * 1.3) * 1.8;
-        positions[i*3 + 2] = base[i*3 + 2] + Math.cos(t * 0.54 * sp + ph) * 1.4;
+        const ang = t * (0.35 + sp * 0.22) + ph;
+        const r = radii[i] + Math.sin(t * 0.9 + ph * 2.1) * 0.55;
+        pos[i*3]     = Math.cos(ang) * r;
+        pos[i*3 + 1] = Math.sin(t * 0.8 * sp + ph * 1.6) * 1.7 + ySpeeds[i] * Math.sin(t * 0.5 + ph) * 0.6;
+        pos[i*3 + 2] = Math.sin(ang) * r;
       }
-      geo.attributes.position.needsUpdate = true;
-      points.rotation.y = t * 0.0495 + mouse.x * 0.28;
-      points.rotation.x = Math.sin(t * 0.18) * 0.08 + mouse.y * 0.18;
-      points.position.y = Math.sin(t * 0.45) * 0.3;
-      camera.position.x = mouse.x * 1.4;
-      camera.position.y = mouse.y * 0.9;
-      camera.lookAt(0, 0, 0);
+      sparkGeo.attributes.position.needsUpdate = true;
+      sparkMat.size = 0.26 + Math.sin(t * 2.2) * 0.05;
+
+      // Movimiento de conjunto con el ratón
+      scene.position.x = mouse.x * 1.6;
+      scene.position.y = mouse.y * 1.0;
+      scene.rotation.y = mouse.x * 0.18;
+      scene.rotation.x = -mouse.y * 0.12;
       renderer.render(scene, camera);
     })();
 
