@@ -930,6 +930,12 @@
   body.clicking, body.clicking *, body.clicking *::before, body.clicking *::after {
     cursor: url("img/paw_click.png") 7 1, auto !important;
   }
+  model-viewer, model-viewer * {
+    cursor: url("img/paw_nav.png") 16 1, auto !important;
+  }
+  body.clicking model-viewer, body.clicking model-viewer * {
+    cursor: url("img/paw_click.png") 7 1, auto !important;
+  }
 
   #intro {
     position: fixed; inset: 0; z-index: 2000;
@@ -3329,12 +3335,15 @@ document.getElementById('omClear').addEventListener('click', () => {
   // Sonido maullido (2s) al hacer click en cualquier botón (excepto cerrar X)
   const meow = new Audio('img/meow.mp3');
   meow.preload = 'auto';
-  meow.volume = 0.35;
+  meow.volume = 0.3;
   const CLOSE_SELECTOR = '.modal-close, .mp-close, [aria-label="Cerrar"], [data-no-meow]';
+  const CLICK_SELECTOR = 'button, a, [role="button"], input[type="submit"], input[type="button"], .script-card, .script-btn, .filter-btn, model-viewer, [data-ropa]';
   document.addEventListener('click', (e) => {
-    const btn = e.target.closest('button, a, [role="button"], input[type="submit"], input[type="button"]');
+    const btn = e.target.closest(CLICK_SELECTOR);
     if (!btn) return;
     if (btn.matches(CLOSE_SELECTOR)) return;
+    // No sonar en campos de texto
+    if (e.target.matches('input[type="text"], input[type="search"], textarea, select')) return;
     try {
       meow.currentTime = 0;
       meow.play().catch(() => {});
