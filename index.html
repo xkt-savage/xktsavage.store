@@ -924,7 +924,7 @@
 </style>
 <style>
   #heroParticles {
-    position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
+    position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%;
     pointer-events: none; display: block;
   }
 </style>
@@ -3280,7 +3280,7 @@ document.getElementById('omClear').addEventListener('click', () => {
       new THREE.Color(0xa855f7), new THREE.Color(0xd946ef),
       new THREE.Color(0x7c3aed), new THREE.Color(0xc084fc), new THREE.Color(0xffffff),
     ];
-    const count = 380;
+    const count = 500;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -3294,8 +3294,8 @@ document.getElementById('omClear').addEventListener('click', () => {
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     const mat = new THREE.PointsMaterial({
-      size: 0.08, sizeAttenuation: true, vertexColors: true,
-      transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending,
+      size: 0.1, sizeAttenuation: true, vertexColors: true,
+      transparent: true, opacity: 1.0, blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
     const points = new THREE.Points(geo, mat);
