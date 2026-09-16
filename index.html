@@ -923,6 +923,14 @@
   }
 
   /* ============ INTRO (hero con GIF + partículas redondas) ============ */
+  /* Cursor: patita de gato (navegar / click) */
+  body, a, button, [role="button"] {
+    cursor: url("img/paw_nav.png") 12 12, auto;
+  }
+  body.clicking, body.clicking a, body.clicking button, body.clicking [role="button"] {
+    cursor: url("img/paw_click.png") 12 12, auto;
+  }
+
   #intro {
     position: fixed; inset: 0; z-index: 2000;
     background: #000000;
@@ -936,7 +944,8 @@
   }
   .intro-gif {
     position: relative; z-index: 3;
-    max-width: min(82vw, 820px); max-height: 74vh; object-fit: contain;
+    max-width: min(88vw, 900px); max-height: 80vh; object-fit: contain;
+    margin-bottom: 38px;
   }
   #enterBtn {
     --c: #5900FF;
@@ -3320,6 +3329,11 @@ document.getElementById('omClear').addEventListener('click', () => {
 <script type="module">
   import * as THREE from 'three';
 
+  // Cursor: segunda patita mientras se mantiene pulsado
+  document.addEventListener('mousedown', () => document.body.classList.add('clicking'));
+  document.addEventListener('mouseup', () => document.body.classList.remove('clicking'));
+  document.addEventListener('mouseleave', () => document.body.classList.remove('clicking'));
+
   const canvas = document.getElementById('introCanvas');
   const introEl = document.getElementById('intro');
   if (canvas && introEl) {
@@ -3348,6 +3362,7 @@ document.getElementById('omClear').addEventListener('click', () => {
     ];
     const count = 420;
     const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
     const base = new Float32Array(count * 3);
     const phases = new Float32Array(count);
     for (let i = 0; i < count; i++) {
