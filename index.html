@@ -921,15 +921,63 @@
     .footer-bottom { padding: 22px; flex-direction: column; text-align: center; }
     .marquee-item { font-size: 36px; }
   }
-</style>
-<style>
-  #heroParticles {
-    position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%;
-    pointer-events: none; display: block;
+
+  /* ============ INTRO (hero con GIF + partículas redondas) ============ */
+  #intro {
+    position: fixed; inset: 0; z-index: 2000;
+    background: #07070a;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity .8s var(--ease), visibility .8s;
+  }
+  #intro.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+  #introCanvas { position: absolute; inset: 0; z-index: 1; }
+  .intro-vignette {
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(7,7,10,.55) 72%, rgba(7,7,10,.97) 100%);
+  }
+  .intro-gif {
+    position: relative; z-index: 3;
+    max-width: min(86vw, 620px); max-height: 62vh; object-fit: contain;
+    filter: drop-shadow(0 0 40px rgba(89,0,255,0.45));
+  }
+  #enterBtn {
+    position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%);
+    z-index: 5;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700;
+    letter-spacing: 5px; text-transform: uppercase; color: #fff;
+    background: transparent;
+    border: 2px solid #5900FF; border-radius: 14px;
+    padding: 16px 58px; cursor: pointer;
+    box-shadow: 0 0 18px rgba(89,0,255,0.55), inset 0 0 12px rgba(89,0,255,0.25);
+    transition: color .2s, border-color .2s;
+  }
+  #enterBtn:hover {
+    animation: btnFlicker .9s steps(1,end) infinite;
+    border-color: #8b5cff;
+  }
+  @keyframes btnFlicker {
+    0%, 100% { opacity: 1; box-shadow: 0 0 22px rgba(89,0,255,0.8), inset 0 0 14px rgba(89,0,255,0.35); }
+    15% { opacity: .35; box-shadow: 0 0 4px rgba(89,0,255,0.15); }
+    30% { opacity: 1; box-shadow: 0 0 30px rgba(89,0,255,1), inset 0 0 18px rgba(89,0,255,0.5); }
+    45% { opacity: .55; box-shadow: 0 0 8px rgba(89,0,255,0.25); }
+    60% { opacity: 1; box-shadow: 0 0 24px rgba(89,0,255,0.9), inset 0 0 16px rgba(89,0,255,0.4); }
+    75% { opacity: .45; box-shadow: 0 0 6px rgba(89,0,255,0.2); }
+  }
+  @media (max-width: 600px) {
+    #enterBtn { padding: 14px 40px; font-size: 14px; letter-spacing: 3px; bottom: 24px; }
+    .intro-gif { max-height: 52vh; }
   }
 </style>
 </head>
-<body>
+<body class="no-scroll">
+
+<!-- INTRO -->
+<div id="intro">
+  <canvas id="introCanvas"></canvas>
+  <div class="intro-vignette"></div>
+  <img class="intro-gif" src="img/gato2.gif" alt="XKT SAVAGE">
+  <button id="enterBtn">Entrar</button>
+</div>
 
 <div class="bg-fx"></div>
 <div class="bg-image" id="bgImage"></div>
@@ -955,7 +1003,6 @@
 
 <!-- HERO -->
 <section class="hero">
-  <canvas id="heroParticles"></canvas>
   <div class="hero-bg-img" id="heroBgImg"></div>
   <div class="hero-orb a"></div>
   <div class="hero-orb b"></div>
@@ -3263,13 +3310,14 @@ document.getElementById('omClear').addEventListener('click', () => {
   omRefresh();
 });
 </script>
+
+<!-- INTRO: partículas redondas + botón entrar -->
 <script type="module">
-  // Partículas 3D pequeñas en el hero
   import * as THREE from 'three';
 
-  const canvas = document.getElementById('heroParticles');
-  const hero = document.querySelector('.hero');
-  if (canvas && hero) {
+  const canvas = document.getElementById('introCanvas');
+  const introEl = document.getElementById('intro');
+  if (canvas && introEl) {
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -3277,17 +3325,29 @@ document.getElementById('omClear').addEventListener('click', () => {
     const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
     camera.position.set(0, 0, 16);
 
+    // Textura circular suave (partículas redondas)
+    const s = 128;
+    const cv = document.createElement('canvas'); cv.width = s; cv.height = s;
+    const ctx = cv.getContext('2d');
+    const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.35, 'rgba(255,255,255,0.75)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(s/2, s/2, s/2, 0, Math.PI * 2); ctx.fill();
+    const dotTex = new THREE.CanvasTexture(cv);
+
     const palette = [
-      new THREE.Color(0xa855f7), new THREE.Color(0xd946ef),
-      new THREE.Color(0x7c3aed), new THREE.Color(0xc084fc), new THREE.Color(0xffffff),
+      new THREE.Color(0x5900FF), new THREE.Color(0xa855f7),
+      new THREE.Color(0xd946ef), new THREE.Color(0xc084fc), new THREE.Color(0xffffff),
     ];
-    const count = 500;
+    const count = 420;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      positions[i*3]     = (Math.random() - 0.5) * 36;
-      positions[i*3 + 1] = (Math.random() - 0.5) * 22;
-      positions[i*3 + 2] = (Math.random() - 0.5) * 24 - 4;
+      positions[i*3]     = (Math.random() - 0.5) * 40;
+      positions[i*3 + 1] = (Math.random() - 0.5) * 26;
+      positions[i*3 + 2] = (Math.random() - 0.5) * 26 - 4;
       const c = palette[Math.floor(Math.random() * palette.length)];
       colors[i*3] = c.r; colors[i*3 + 1] = c.g; colors[i*3 + 2] = c.b;
     }
@@ -3295,8 +3355,8 @@ document.getElementById('omClear').addEventListener('click', () => {
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     const mat = new THREE.PointsMaterial({
-      size: 0.1, sizeAttenuation: true, vertexColors: true,
-      transparent: true, opacity: 1.0, blending: THREE.AdditiveBlending,
+      size: 0.34, sizeAttenuation: true, map: dotTex, vertexColors: true,
+      transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
     const points = new THREE.Points(geo, mat);
@@ -3309,38 +3369,37 @@ document.getElementById('omClear').addEventListener('click', () => {
     });
 
     function resize() {
-      const w = Math.max(1, hero.clientWidth);
-      const h = Math.max(1, hero.clientHeight);
+      const w = Math.max(1, window.innerWidth);
+      const h = Math.max(1, window.innerHeight);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     }
     resize();
-    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
     window.addEventListener('resize', resize);
 
-    let visible = true;
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver((entries) => {
-        visible = entries[0].isIntersecting;
-      }, { threshold: 0.02 }).observe(hero);
-    }
-
+    let rendering = true;
     const clock = new THREE.Clock();
     (function animate() {
+      if (!rendering) return;
       requestAnimationFrame(animate);
-      if (!visible) return;
       const t = clock.getElapsedTime();
       mouse.x += (mouse.tx - mouse.x) * 0.04;
       mouse.y += (mouse.ty - mouse.y) * 0.04;
-      points.rotation.y = t * 0.035 + mouse.x * 0.25;
-      points.rotation.x = Math.sin(t * 0.15) * 0.05 + mouse.y * 0.15;
+      points.rotation.y = t * 0.03 + mouse.x * 0.22;
+      points.rotation.x = Math.sin(t * 0.15) * 0.05 + mouse.y * 0.14;
       points.position.y = Math.sin(t * 0.5) * 0.3;
-      camera.position.x = mouse.x * 1.5;
-      camera.position.y = mouse.y * 1.0;
+      camera.position.x = mouse.x * 1.4;
+      camera.position.y = mouse.y * 0.9;
       camera.lookAt(0, 0, 0);
       renderer.render(scene, camera);
     })();
+
+    document.getElementById('enterBtn').addEventListener('click', () => {
+      introEl.classList.add('hide');
+      document.body.classList.remove('no-scroll');
+      setTimeout(() => { rendering = false; introEl.style.display = 'none'; }, 850);
+    });
   }
 </script>
 </body>
