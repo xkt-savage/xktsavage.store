@@ -217,9 +217,9 @@
   "layout": {
     "order": [
       "probador",
+      "reviews",
       "marquee",
       "tienda",
-      "reviews",
       "discord",
       "cta",
       "b:bowvdzg6",
@@ -230,7 +230,7 @@
       "marquee": true,
       "tienda": false,
       "probador": true,
-      "reviews": false,
+      "reviews": true,
       "discord": false,
       "cta": false,
       "b:bowvdzg6": true
