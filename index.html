@@ -3326,12 +3326,15 @@ document.getElementById('omClear').addEventListener('click', () => {
   document.addEventListener('mouseup', () => document.body.classList.remove('clicking'));
   document.addEventListener('mouseleave', () => document.body.classList.remove('clicking'));
 
-  // Sonido maullido (2s) al hacer click en cualquier botón
+  // Sonido maullido (2s) al hacer click en cualquier botón (excepto cerrar X)
   const meow = new Audio('img/meow.mp3');
   meow.preload = 'auto';
+  meow.volume = 0.35;
+  const CLOSE_SELECTOR = '.modal-close, .mp-close, [aria-label="Cerrar"], [data-no-meow]';
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('button, a, [role="button"], input[type="submit"], input[type="button"]');
     if (!btn) return;
+    if (btn.matches(CLOSE_SELECTOR)) return;
     try {
       meow.currentTime = 0;
       meow.play().catch(() => {});
