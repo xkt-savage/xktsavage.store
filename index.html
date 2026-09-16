@@ -922,6 +922,12 @@
     .marquee-item { font-size: 36px; }
   }
 </style>
+<style>
+  #heroParticles {
+    position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
+    pointer-events: none; display: block;
+  }
+</style>
 </head>
 <body>
 
@@ -949,6 +955,7 @@
 
 <!-- HERO -->
 <section class="hero">
+  <canvas id="heroParticles"></canvas>
   <div class="hero-bg-img" id="heroBgImg"></div>
   <div class="hero-orb a"></div>
   <div class="hero-orb b"></div>
@@ -3255,6 +3262,85 @@ document.getElementById('omClear').addEventListener('click', () => {
   omRenderSide();
   omRefresh();
 });
+<script type="module">
+  // Partículas 3D pequeñas en el hero
+  import * as THREE from 'three';
+
+  const canvas = document.getElementById('heroParticles');
+  const hero = document.querySelector('.hero');
+  if (canvas && hero) {
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+    camera.position.set(0, 0, 16);
+
+    const palette = [
+      new THREE.Color(0xa855f7), new THREE.Color(0xd946ef),
+      new THREE.Color(0x7c3aed), new THREE.Color(0xc084fc), new THREE.Color(0xffffff),
+    ];
+    const count = 380;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      positions[i*3]     = (Math.random() - 0.5) * 36;
+      positions[i*3 + 1] = (Math.random() - 0.5) * 22;
+      positions[i*3 + 2] = (Math.random() - 0.5) * 24 - 4;
+      const c = palette[Math.floor(Math.random() * palette.length)];
+      colors[i*3] = c.r; colors[i*3 + 1] = c.g; colors[i*3 + 2] = c.b;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const mat = new THREE.PointsMaterial({
+      size: 0.08, sizeAttenuation: true, vertexColors: true,
+      transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const points = new THREE.Points(geo, mat);
+    scene.add(points);
+
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    window.addEventListener('mousemove', (e) => {
+      mouse.tx = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.ty = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    function resize() {
+      const w = Math.max(1, hero.clientWidth);
+      const h = Math.max(1, hero.clientHeight);
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
+    window.addEventListener('resize', resize);
+
+    let visible = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+      }, { threshold: 0.02 }).observe(hero);
+    }
+
+    const clock = new THREE.Clock();
+    (function animate() {
+      requestAnimationFrame(animate);
+      if (!visible) return;
+      const t = clock.getElapsedTime();
+      mouse.x += (mouse.tx - mouse.x) * 0.04;
+      mouse.y += (mouse.ty - mouse.y) * 0.04;
+      points.rotation.y = t * 0.035 + mouse.x * 0.25;
+      points.rotation.x = Math.sin(t * 0.15) * 0.05 + mouse.y * 0.15;
+      points.position.y = Math.sin(t * 0.5) * 0.3;
+      camera.position.x = mouse.x * 1.5;
+      camera.position.y = mouse.y * 1.0;
+      camera.lookAt(0, 0, 0);
+      renderer.render(scene, camera);
+    })();
+  }
 </script>
 </body>
 </html>
