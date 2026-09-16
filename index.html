@@ -936,7 +936,7 @@
   }
   .intro-gif {
     position: relative; z-index: 3;
-    max-width: min(86vw, 620px); max-height: 62vh; object-fit: contain;
+    max-width: min(96vw, 1080px); max-height: 90vh; object-fit: contain;
   }
   #enterBtn {
     --c: #5900FF;
@@ -955,7 +955,7 @@
       linear-gradient(var(--c), var(--c)) bottom right / 2px 24px no-repeat;
     border: none; border-radius: 14px;
     padding: 18px 58px; cursor: pointer;
-    box-shadow: 0 0 18px rgba(89,0,255,0.45);
+    box-shadow: none;
   }
   #enterBtn:hover {
     --c: #8b5cff;
@@ -980,7 +980,7 @@
 <div id="intro">
   <canvas id="introCanvas"></canvas>
   <div class="intro-vignette"></div>
-  <img class="intro-gif" src="img/gato2.gif" alt="XKT SAVAGE">
+  <img class="intro-gif" src="img/gato2_nobg.gif" alt="XKT SAVAGE">
   <button id="enterBtn">Entrar</button>
 </div>
 
