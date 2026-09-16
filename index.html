@@ -937,6 +937,29 @@
     cursor: url("img/paw_click.png") 7 1, auto !important;
   }
 
+  /* Divisores sutiles morados que se desvanecen en los bordes */
+  section[data-section] { position: relative; }
+  section[data-section]::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(89, 0, 255, 0.15) 15%,
+      rgba(89, 0, 255, 0.55) 50%,
+      rgba(89, 0, 255, 0.15) 85%,
+      transparent 100%);
+    pointer-events: none;
+  }
+  section[data-section]::after {
+    content: ''; position: absolute; top: 3px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(89, 0, 255, 0.08) 20%,
+      rgba(89, 0, 255, 0.25) 50%,
+      rgba(89, 0, 255, 0.08) 80%,
+      transparent 100%);
+    pointer-events: none;
+  }
+
   #intro {
     position: fixed; inset: 0; z-index: 2000;
     background: #000000;
@@ -944,10 +967,15 @@
     transition: opacity .8s var(--ease), visibility .8s;
   }
   #intro.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-  .intro-gif {
+  .intro-gif-wrap {
     position: relative; z-index: 3;
-    max-width: min(88vw, 900px); max-height: 80vh; object-fit: contain;
+    max-width: min(88vw, 900px); max-height: 80vh;
     margin-bottom: 38px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0,0,0,0.55) 78%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0,0,0,0.55) 78%, transparent 100%);
+  }
+  .intro-gif {
+    display: block; width: 100%; height: auto; max-height: 80vh; object-fit: contain;
   }
   #enterBtn {
     --c: #5900FF;
@@ -989,7 +1017,9 @@
 
 <!-- INTRO -->
 <div id="intro">
-  <img class="intro-gif" src="img/gato.gif" alt="XKT SAVAGE">
+  <div class="intro-gif-wrap">
+    <img class="intro-gif" src="img/gato.gif" alt="XKT SAVAGE">
+  </div>
   <button id="enterBtn">Entrar</button>
 </div>
 
