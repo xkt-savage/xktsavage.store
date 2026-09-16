@@ -21,7 +21,7 @@
   },
   "background": {
     "color": "#0a0a0c",
-    "image": "img/fondo.png",
+    "image": "img/fondo.jpg",
     "opacity": 0.25,
     "overlay": 0.5,
     "showOrbs": true,
@@ -45,7 +45,7 @@
     "primaryBtnHref": "#probador",
     "ghostBtnLabel": "Únete al Discord",
     "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv",
-    "bgImage": "img/hero.png"
+    "bgImage": "img/hero.jpg"
   },
   "heroTicker": {
     "show": true,
