@@ -925,43 +925,48 @@
   /* ============ INTRO (hero con GIF + partículas redondas) ============ */
   #intro {
     position: fixed; inset: 0; z-index: 2000;
-    background: #07070a;
+    background: #000000;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity .8s var(--ease), visibility .8s;
   }
   #intro.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-  #introCanvas { position: absolute; inset: 0; z-index: 1; }
+  #introCanvas { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
   .intro-vignette {
     position: absolute; inset: 0; z-index: 2; pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 30%, rgba(7,7,10,.55) 72%, rgba(7,7,10,.97) 100%);
   }
   .intro-gif {
     position: relative; z-index: 3;
     max-width: min(86vw, 620px); max-height: 62vh; object-fit: contain;
-    filter: drop-shadow(0 0 40px rgba(89,0,255,0.45));
   }
   #enterBtn {
+    --c: #5900FF;
     position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%);
     z-index: 5;
     font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700;
     letter-spacing: 5px; text-transform: uppercase; color: #fff;
-    background: transparent;
-    border: 2px solid #5900FF; border-radius: 14px;
-    padding: 16px 58px; cursor: pointer;
-    box-shadow: 0 0 18px rgba(89,0,255,0.55), inset 0 0 12px rgba(89,0,255,0.25);
-    transition: color .2s, border-color .2s;
+    background:
+      linear-gradient(var(--c), var(--c)) top left / 24px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) top left / 2px 24px no-repeat,
+      linear-gradient(var(--c), var(--c)) top right / 24px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) top right / 2px 24px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom left / 24px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom left / 2px 24px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom right / 24px 2px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom right / 2px 24px no-repeat;
+    border: none; border-radius: 14px;
+    padding: 18px 58px; cursor: pointer;
+    box-shadow: 0 0 18px rgba(89,0,255,0.45);
   }
   #enterBtn:hover {
-    animation: btnFlicker .9s steps(1,end) infinite;
-    border-color: #8b5cff;
+    --c: #8b5cff;
+    animation: btnFlicker 2s steps(1,end) infinite;
   }
   @keyframes btnFlicker {
-    0%, 100% { opacity: 1; box-shadow: 0 0 22px rgba(89,0,255,0.8), inset 0 0 14px rgba(89,0,255,0.35); }
-    15% { opacity: .35; box-shadow: 0 0 4px rgba(89,0,255,0.15); }
-    30% { opacity: 1; box-shadow: 0 0 30px rgba(89,0,255,1), inset 0 0 18px rgba(89,0,255,0.5); }
-    45% { opacity: .55; box-shadow: 0 0 8px rgba(89,0,255,0.25); }
-    60% { opacity: 1; box-shadow: 0 0 24px rgba(89,0,255,0.9), inset 0 0 16px rgba(89,0,255,0.4); }
-    75% { opacity: .45; box-shadow: 0 0 6px rgba(89,0,255,0.2); }
+    0%, 100% { opacity: 1; box-shadow: 0 0 22px rgba(89,0,255,0.7); }
+    20% { opacity: .3; box-shadow: 0 0 4px rgba(89,0,255,0.12); }
+    40% { opacity: 1; box-shadow: 0 0 26px rgba(89,0,255,0.9); }
+    60% { opacity: .5; box-shadow: 0 0 6px rgba(89,0,255,0.2); }
+    80% { opacity: 1; box-shadow: 0 0 20px rgba(89,0,255,0.8); }
   }
   @media (max-width: 600px) {
     #enterBtn { padding: 14px 40px; font-size: 14px; letter-spacing: 3px; bottom: 24px; }
