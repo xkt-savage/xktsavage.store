@@ -2,3 +2,7 @@ __pycache__/
 *.py[cod]
 .DS_Store
 Thumbs.db
+
+# Panel de administracion: solo local, nunca se publica en GitHub Pages
+# (evita que cualquiera pueda ver el codigo del login en xktsavage.store/admin.html)
+admin.html

@@ -6,7 +6,7 @@
     "primaryColor": "#9333EA",
     "discordUrl": "https://discord.gg/RNVxxAU9Nvl",
     "navCtaLabel": "Ver Catálogo",
-    "navCtaHref": "#probador"
+    "navCtaHref": "#tienda"
   },
   "theme": {
     "textColor": "#F2F2F4",
@@ -42,7 +42,7 @@
     "titleImageSize": 900,
     "subtitle": "Prendas y props de calidad para servidores serios — Diseños exclusivos.",
     "primaryBtnLabel": "Ver Catálogo →",
-    "primaryBtnHref": "#probador",
+    "primaryBtnHref": "#tienda",
     "ghostBtnLabel": "Únete al Discord",
     "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv",
     "bgImage": "img/hero.jpg"
@@ -132,10 +132,17 @@
     "direction": "left",
     "speed": 32
   },
+  "recentPurchases": {
+    "tag": "En vivo",
+    "title": "ÚLTIMAS\nCOMPRAS",
+    "desc": "Nuevos pedidos entregados a nuestros clientes 💜",
+    "direction": "left",
+    "speed": 102
+  },
   "scriptsHeading": {
-    "tag": "Tienda",
-    "title": "NUEVOS\nDROPS",
-    "desc": "Drops de ropa, props y contenido custom. Calidad premium para tu servidor."
+    "tag": "Catálogo",
+    "title": "CATÁLOGO\nCOMPLETO",
+    "desc": "Ropa, accesorios, props, retexturas, branding y personalización de servidores. Todo el catálogo XKT en un solo lugar."
   },
   "scriptsLayout": {
     "mode": "grid",
@@ -151,7 +158,7 @@
   "reviews": {
     "tag": "Lo que dicen",
     "title": "REVIEWS\nREALES",
-    "view": "grid",
+    "view": "crossfade",
     "direction": "left",
     "speed": 40,
     "items": [
@@ -216,19 +223,21 @@
   },
   "layout": {
     "order": [
+      "creaciones",
+      "tienda",
       "probador",
       "reviews",
       "marquee",
-      "tienda",
       "discord",
       "cta",
       "b:bowvdzg6",
       "trust"
     ],
     "visible": {
+      "creaciones": true,
       "trust": true,
       "marquee": true,
-      "tienda": false,
+      "tienda": true,
       "probador": true,
       "reviews": true,
       "discord": false,
@@ -249,5 +258,69 @@
     "tag": "Probador 3D",
     "title": "CATALOGO\n3D",
     "desc": ""
+  },
+  "creaciones": {
+    "tag": "Exclusivo",
+    "title": "CREACIONES\nXKT SAVAGE",
+    "desc": "Diseños creados completamente desde cero y desarrollados exclusivamente por XKT. Cada pieza se trabaja desde su concepto inicial hasta el resultado final.",
+    "prefix": "[ORIGINAL]",
+    "subs": [
+      {
+        "label": "Ropa",
+        "keywords": ["ropa", "camiseta", "camisetas", "pantalón", "pantalones", "chaqueta", "chaquetas", "buzo", "buzos", "hoodie", "remera", "remeras", "shirt", "shirts", "pants", "clothing", "torso", "piernas", "vestido", "falda"]
+      },
+      {
+        "label": "Accesorios",
+        "keywords": ["accesorio", "accesorios", "accessory", "accessories", "gorra", "gorras", "sombrero", "sombreros", "máscara", "máscaras", "mask", "masks", "hat", "hats", "venda", "vendas", "guante", "guantes", "reloj", "collar", "cadena", "gafas", "lentes", "brazo", "brazos"]
+      },
+      {
+        "label": "Props",
+        "keywords": ["prop", "props", "arma", "armas", "weapon", "weapons", "objeto", "objetos", "item", "items", "herramienta", "herramientas", "micrófono", "megáfono"]
+      },
+      {
+        "label": "Branding",
+        "keywords": ["logo", "logos", "banner", "banners", "branding", "identidad", "emblema", "emblemas", "portada", "portadas"]
+      },
+      {
+        "label": "Servidor",
+        "keywords": ["pvp", "zona", "zonas", "letrero", "letreros", "sign", "signs", "mapping", "mapeo", "servidor", "server", "base", "bases", "edificio", "edificios", "mapa", "mapas"]
+      },
+      {
+        "label": "Etc",
+        "keywords": []
+      }
+    ]
+  },
+  "catalogo": {
+    "subs": [
+      {
+        "label": "Ropa",
+        "keywords": ["ropa", "camiseta", "camisetas", "pantalón", "pantalones", "chaqueta", "chaquetas", "buzo", "buzos", "hoodie", "remera", "remeras", "shirt", "shirts", "pants", "clothing", "torso", "piernas", "vestido", "falda"]
+      },
+      {
+        "label": "Accesorios",
+        "keywords": ["accesorio", "accesorios", "accessory", "accessories", "gorra", "gorras", "sombrero", "sombreros", "máscara", "máscaras", "mask", "masks", "hat", "hats", "venda", "vendas", "guante", "guantes", "reloj", "collar", "cadena", "gafas", "lentes", "brazo", "brazos"]
+      },
+      {
+        "label": "Props",
+        "keywords": ["prop", "props", "arma", "armas", "weapon", "weapons", "objeto", "objetos", "item", "items", "herramienta", "herramientas", "micrófono", "megáfono"]
+      },
+      {
+        "label": "Retexturas",
+        "keywords": ["retextura", "retexturas", "retexture", "retextures", "textura", "texturas", "texture"]
+      },
+      {
+        "label": "Branding",
+        "keywords": ["logo", "logos", "banner", "banners", "branding", "identidad", "emblema", "emblemas", "portada", "portadas"]
+      },
+      {
+        "label": "Servidor",
+        "keywords": ["pvp", "zona", "zonas", "letrero", "letreros", "sign", "signs", "mapping", "mapeo", "servidor", "server", "base", "bases", "edificio", "edificios", "mapa", "mapas"]
+      },
+      {
+        "label": "Etc",
+        "keywords": []
+      }
+    ]
   }
 }
