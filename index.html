@@ -1699,7 +1699,7 @@ function renderGrid(filterCat) {
 function renderFilters() {
   const bar = document.getElementById('filterBar');
   if (!bar) return;
-  bar.innerHTML = `<button class="filter-btn active" data-cat="all">Todos</button>`;
+  bar.innerHTML = `<button class="filter-btn${activeCategory === 'all' ? ' active' : ''}" data-cat="all">Todos</button>`;
   catalogSubs().forEach((sub, i) => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn';
@@ -1708,6 +1708,7 @@ function renderFilters() {
     bar.appendChild(btn);
   });
   bar.querySelectorAll('.filter-btn').forEach(btn => {
+    if (btn.dataset.cat === activeCategory) btn.classList.add('active');
     btn.addEventListener('click', () => {
       bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -1748,6 +1749,7 @@ function matchSub(pkg, sub) {
   return sub.keywords.some(k => catName.includes(normStr(k)));
 }
 
+let creacionesActiveCat = 'all';
 function renderCreacionesFilters() {
   const bar = document.getElementById('creacionesFilterBar');
   if (!bar) return;
@@ -1760,10 +1762,12 @@ function renderCreacionesFilters() {
     bar.appendChild(btn);
   });
   bar.querySelectorAll('.filter-btn').forEach(btn => {
+    if (btn.dataset.cat === creacionesActiveCat) btn.classList.add('active'); else btn.classList.remove('active');
     btn.addEventListener('click', () => {
       bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      renderCreacionesGrid(btn.dataset.cat);
+      creacionesActiveCat = btn.dataset.cat;
+      renderCreacionesGrid(creacionesActiveCat);
     });
   });
 }
