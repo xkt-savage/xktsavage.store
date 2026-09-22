@@ -3096,9 +3096,9 @@ function renderRecentPurchases(c) {
   const rp = (c && c.recentPurchases) || {};
   if (!__rpCache) __rpCache = generatePurchases(14);
 
-  const tag = document.getElementById('rpTag'); if (tag) tag.textContent = L()['rp.tag'];
-  const ttl = document.getElementById('rpTitle'); if (ttl) ttl.innerHTML = L()['rp.title'];
-  const desc = document.getElementById('rpDesc'); if (desc) desc.textContent = L()['rp.desc'];
+  const tag = document.getElementById('rpTag'); if (tag) tag.textContent = rp.tag || L()['rp.tag'];
+  const ttl = document.getElementById('rpTitle'); if (ttl) ttl.innerHTML = rp.title ? dimTitle(rp.title) : L()['rp.title'];
+  const desc = document.getElementById('rpDesc'); if (desc) desc.textContent = rp.desc || L()['rp.desc'];
 
   const cards = __rpCache.map(b => `
     <div class="rp-card">
@@ -3708,10 +3708,10 @@ document.addEventListener('click', e => {
 async function loadConfig() {
   const params = new URLSearchParams(location.search);
   if (params.get('preview') === '1') {
-    try { const d = localStorage.getItem('xkt_preview_config'); if (d) return JSON.parse(d); } catch (e) {}
+    try { const d = localStorage.getItem('xkt_preview_config_v2'); if (d) return JSON.parse(d); } catch (e) {}
   }
   try {
-    const r = await fetch('config.json', { cache: 'no-store' });
+    const r = await fetch('config.json?t=' + Date.now(), { cache: 'no-store' });
     if (r.ok) return await r.json();
   } catch (e) {}
   return null;
@@ -3719,7 +3719,7 @@ async function loadConfig() {
 
 // Live preview: react to changes from the admin panel in the same browser
 window.addEventListener('storage', (e) => {
-  if (e.key === 'xkt_preview_config' && new URLSearchParams(location.search).get('preview') === '1') {
+  if (e.key === 'xkt_preview_config_v2' && new URLSearchParams(location.search).get('preview') === '1') {
     try { applyConfig(JSON.parse(e.newValue)); } catch (err) {}
   }
 });
