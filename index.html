@@ -219,7 +219,7 @@
     display: flex; gap: 56px; margin-top: 70px; flex-wrap: wrap;
   }
   .stat { position: relative; }
-  .stat-num { font-family: var(--font-display); font-size: 52px; letter-spacing: 2px; color: #fff; line-height: 1; }
+  .stat-num { font-family: var(--font-display); font-size: var(--stat-num-fs, 52px); letter-spacing: 2px; color: #fff; line-height: 1; }
   .stat-num span { color: var(--red); }
   .stat-label { font-family: var(--font-head); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
 
@@ -441,7 +441,7 @@
   .rv-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; padding: 0; transition: background .25s, border-color .25s, box-shadow .25s; }
   .rv-dot.rv-dot-on { background: var(--red); border-color: var(--red); box-shadow: 0 0 10px var(--red-glow); }
   .test-stars { color: var(--red); font-size: 15px; letter-spacing: 3px; margin-bottom: 16px; }
-  .test-text { font-size: 14px; color: #c9c9d0; line-height: 1.7; margin-bottom: 24px; font-style: italic; position: relative; z-index: 1; }
+  .test-text { font-size: var(--test-fs, 14px); color: #c9c9d0; line-height: 1.7; margin-bottom: 24px; font-style: italic; position: relative; z-index: 1; }
   .test-author { display: flex; align-items: center; gap: 12px; }
   .test-avatar { width: 40px; height: 40px; background: var(--grad-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #fff; flex-shrink: 0; }
   .test-name { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 1px; }
@@ -455,7 +455,7 @@
   }
   .cta-banner::before { content: ''; position: absolute; top: -150px; right: -120px; width: 560px; height: 560px; background: radial-gradient(circle, rgba(147,51,234,0.20) 0%, transparent 70%); pointer-events: none; }
   .cta-inner { max-width: 560px; position: relative; z-index: 1; }
-  .cta-title { font-family: var(--font-display); font-size: clamp(48px, 7vw, 100px); letter-spacing: 3px; color: #fff; line-height: 0.9; margin: 14px 0 24px; }
+  .cta-title { font-family: var(--font-display); font-size: var(--cta-title-fs, clamp(48px, 7vw, 100px)); letter-spacing: 3px; color: #fff; line-height: 0.9; margin: 14px 0 24px; }
   .cta-title .red { color: var(--red); }
   .cta-desc { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 40px; }
   .cta-members { margin-top: 18px; font-family: var(--font-head); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
@@ -574,9 +574,9 @@
   .block-text { color: var(--muted); font-size: 16px; line-height: 1.85; }
   .block-titleblock .block-text { max-width: 640px; margin: 18px auto 0; }
   .block-media { margin: 0; position: relative; }
-  .block-media img, .block-media video { width: 100%; display: block; border-radius: 16px; border: 1px solid var(--border); }
+  .block-media img, .block-media video { width: 100%; max-width: var(--media-w, 100%); margin-inline: auto; display: block; border-radius: 16px; border: 1px solid var(--border); }
   .block-media img { object-fit: cover; }
-  .block-embed { position: relative; width: 100%; padding-top: 56.25%; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+  .block-embed { position: relative; width: 100%; max-width: var(--media-w, 100%); margin-inline: auto; padding-top: 56.25%; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
   .block-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .block-caption { text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px; font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase; }
   /* WINDOW BLOCK */
@@ -629,7 +629,7 @@
   .carousel-track { display: flex; gap: 22px; width: max-content; }
   .carousel-track .script-card { flex: 0 0 320px; width: 320px; }
   .carousel-item { flex: 0 0 340px; width: 340px; }
-  .carousel-item img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); }
+  .carousel-item img { width: 100%; height: var(--car-h, 200px); object-fit: cover; border-radius: 12px; border: 1px solid var(--border); }
   .carousel-item video { width: 100%; border-radius: 12px; border: 1px solid var(--border); }
   .carousel-cap { font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase; font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center; }
   .car-ctrl { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 18px; }
@@ -654,6 +654,7 @@
   /* CUSTOM BUTTON BLOCK */
   .block-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   .cbtn { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 15px 36px; cursor: pointer; text-decoration: none; transition: all .25s var(--ease); display: inline-flex; align-items: center; gap: 8px; border: none; }
+  .block-buttons .cbtn { font-size: var(--btn-fs, 14px); }
   .cbtn.solid { background: var(--grad-red); color: #fff; box-shadow: 0 8px 24px rgba(147,51,234,0.3); }
   .cbtn.solid:hover { transform: translateY(-3px); }
   .cbtn.ghost { background: rgba(255,255,255,0.04); border: 1px solid var(--border-2); color: var(--text); }
@@ -668,7 +669,7 @@
 
   /* GALLERY */
   .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-  .gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); transition: transform .4s var(--ease); cursor: pointer; }
+  .gallery-grid img { width: 100%; height: var(--gal-h, 200px); object-fit: cover; border-radius: 12px; border: 1px solid var(--border); transition: transform .4s var(--ease); cursor: pointer; }
   .gallery-grid img:hover { transform: scale(1.03); border-color: var(--border-red); }
 
   /* FEATURES CARDS */
@@ -763,6 +764,10 @@
   .partner:hover img { transform: scale(1.2); opacity: 1; }
   .carousel-track .partner { flex: 0 0 auto; }
   .carousel-item.partner-cell { flex: 0 0 auto; width: auto; display: flex; align-items: center; padding: 0 12px; }
+  @keyframes partnerFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-11px); } }
+  .partners-wave .partner { animation: partnerFloat 3.4s ease-in-out infinite; animation-delay: calc(var(--pi, 0) * 0.32s); will-change: transform; }
+  .partners-wave .partner:hover { animation-play-state: paused; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) { .partners-wave .partner { animation: none; } }
   .carousel-track .test-card { flex: 0 0 340px; width: 340px; white-space: normal; }
   .hero-title-img { max-width: 90%; height: auto; display: block; margin-bottom: 8px; }
   .hero[data-align="center"] .hero-title-img { margin-left: auto; margin-right: auto; }
@@ -3207,26 +3212,30 @@ function mediaHTML(media) {
   return `<img src="${escHTML(url)}" alt="${escHTML(media.alt || '')}" onerror="xktImgFallback(this)" loading="lazy">`;
 }
 
+// helpers de tamaño configurable (px) desde el panel
+function pxStyle(v) { const n = parseInt(v); return n ? ` style="font-size:${n}px"` : ''; }
+function pxVar(name, v) { const n = parseInt(v); return n ? ` style="${name}:${n}px"` : ''; }
+
 function renderBlock(b) {
   switch (b.type) {
     case 'title':
       return `<div class="block block-titleblock reveal">
         ${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}
-        <h2 class="section-title">${nl2br(b.text)}</h2>
-        ${b.subtitle ? `<p class="block-text">${nl2br(b.subtitle)}</p>` : ''}
+        <h2 class="section-title"${pxStyle(b.titleSize)}>${nl2br(b.text)}</h2>
+        ${b.subtitle ? `<p class="block-text"${pxStyle(b.textSize)}>${nl2br(b.subtitle)}</p>` : ''}
       </div>`;
     case 'text':
-      return `<div class="block reveal"><p class="block-text">${nl2br(b.text)}</p></div>`;
+      return `<div class="block reveal"><p class="block-text"${pxStyle(b.textSize)}>${nl2br(b.text)}</p></div>`;
     case 'image':
     case 'gif':
-      return `<figure class="block block-media reveal">
+      return `<figure class="block block-media reveal"${pxVar('--media-w', b.imgSize)}>
         ${b.link ? `<a href="${escHTML(b.link)}" target="_blank" rel="noopener">` : ''}
         ${mediaHTML({ type: 'image', url: b.url, alt: b.caption })}
         ${b.link ? `</a>` : ''}
         ${b.caption ? `<figcaption class="block-caption">${escHTML(b.caption)}</figcaption>` : ''}
       </figure>`;
     case 'video':
-      return `<figure class="block block-media reveal">
+      return `<figure class="block block-media reveal"${pxVar('--media-w', b.imgSize)}>
         ${mediaHTML({ type: 'video', url: b.url })}
         ${b.caption ? `<figcaption class="block-caption">${escHTML(b.caption)}</figcaption>` : ''}
       </figure>`;
@@ -3234,8 +3243,8 @@ function renderBlock(b) {
       return `<div class="block win reveal">
         <div class="win-bar"><span class="win-dots"><i class="win-dot"></i><i class="win-dot"></i><i class="win-dot"></i></span><span class="win-title">${escHTML(b.title || '')}</span></div>
         <div class="win-body">
-          ${b.media && b.media.url ? `<div class="win-media">${mediaHTML(b.media)}</div>` : ''}
-          ${b.text ? `<p class="block-text">${nl2br(b.text)}</p>` : ''}
+          ${b.media && b.media.url ? `<div class="win-media"${pxVar('--media-w', b.imgSize)}>${mediaHTML(b.media)}</div>` : ''}
+          ${b.text ? `<p class="block-text"${pxStyle(b.textSize)}>${nl2br(b.text)}</p>` : ''}
         </div>
       </div>`;
     case 'embed': {
@@ -3253,16 +3262,18 @@ function renderBlock(b) {
     case 'marquee': {
       const words = Array.isArray(b.words) ? b.words : String(b.words || '').split(',').map(w => w.trim()).filter(Boolean);
       if (!words.length) return '';
+      const fs = parseInt(b.textSize) ? `font-size:${parseInt(b.textSize)}px;` : '';
       let items = '';
-      for (let r = 0; r < 4; r++) words.forEach((w, i) => { items += `<span class="marquee-item${i % 2 ? ' accent' : ''}">${escHTML(w)}</span>`; });
+      for (let r = 0; r < 4; r++) words.forEach((w, i) => { items += `<span class="marquee-item${i % 2 ? ' accent' : ''}"${fs ? ` style="${fs}"` : ''}>${escHTML(w)}</span>`; });
       const dir = b.direction === 'right' ? 'reverse' : 'normal';
       const spd = Number(b.speed) || 30;
       return `<div class="block reveal"><div class="mini-marquee"><div class="marquee-track" style="animation-duration:${spd}s;animation-direction:${dir}">${items}</div></div></div>`;
     }
     case 'buttons': {
+      const bfs = parseInt(b.textSize) ? ` style="font-size:${parseInt(b.textSize)}px"` : '';
       const items = (b.items || []).filter(it => it.label).map(it => {
         const ext = /^https?:/.test(it.href || '') ? ' target="_blank" rel="noopener"' : '';
-        return `<a class="cbtn ${it.style || 'solid'}" href="${escHTML(it.href || '#')}"${ext}>${escHTML(it.label)}</a>`;
+        return `<a class="cbtn ${it.style || 'solid'}" href="${escHTML(it.href || '#')}"${ext}${bfs}>${escHTML(it.label)}</a>`;
       }).join('');
       if (!items) return '';
       return `<div class="block reveal"><div class="block-buttons" style="justify-content:${b.align || 'center'}">${items}</div></div>`;
@@ -3275,7 +3286,7 @@ function renderBlock(b) {
         return `<div class="carousel-item">${media}${it.caption ? `<div class="carousel-cap">${escHTML(it.caption)}</div>` : ''}</div>`;
       };
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
-      return `<div class="reveal">${head}${carouselHTML(items.map(mk).join(''), b.direction, b.speed)}</div>`;
+      return `<div class="reveal">${head}<div${pxVar('--car-h', b.imgSize)}>${carouselHTML(items.map(mk).join(''), b.direction, b.speed)}</div></div>`;
     }
     case 'partners': {
       const items = (b.items || []).filter(it => it.logo);
@@ -3284,16 +3295,19 @@ function renderBlock(b) {
       const op = (b.opacity != null && b.opacity !== '') ? b.opacity : 0.85;
       const gap = Number(b.gap) || 40;
       const size = Number(b.logoSize) || 64;
-      const mk = it => {
+      const wave = b.wave !== 'off';
+      const mk = (it, i) => {
         const img = `<img src="${escHTML(it.logo)}" alt="partner" onerror="xktImgFallback(this)" loading="lazy">`;
-        return it.link ? `<a class="partner" href="${escHTML(it.link)}" target="_blank" rel="noopener">${img}</a>` : `<span class="partner">${img}</span>`;
+        const st = wave ? ` style="--pi:${i % 12}"` : '';
+        return it.link ? `<a class="partner" href="${escHTML(it.link)}" target="_blank" rel="noopener"${st}>${img}</a>` : `<span class="partner"${st}>${img}</span>`;
       };
       const inner = items.map(mk).join('');
+      const waveCls = wave ? ' partners-wave' : '';
       if (b.view === 'carousel') {
-        const cells = items.map(it => `<div class="carousel-item partner-cell">${mk(it)}</div>`).join('');
-        return `<div class="reveal" style="--p-op:${op};--p-size:${size}px">${head}${carouselHTML(cells, b.direction, b.speed)}</div>`;
+        const cells = items.map((it, i) => `<div class="carousel-item partner-cell">${mk(it, i)}</div>`).join('');
+        return `<div class="reveal${waveCls}" style="--p-op:${op};--p-size:${size}px">${head}${carouselHTML(cells, b.direction, b.speed)}</div>`;
       }
-      return `<div class="reveal" style="--p-op:${op};--p-size:${size}px">${head}<div class="partners-grid" style="gap:${gap}px">${inner}</div></div>`;
+      return `<div class="reveal${waveCls}" style="--p-op:${op};--p-size:${size}px">${head}<div class="partners-grid" style="gap:${gap}px">${inner}</div></div>`;
     }
     case 'gallery': {
       const imgs = (b.images || []).filter(Boolean);
@@ -3301,23 +3315,23 @@ function renderBlock(b) {
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
       if (b.view === 'carousel') {
         const cards = imgs.map(u => `<div class="carousel-item"><img src="${escHTML(u)}" onerror="xktImgFallback(this)" loading="lazy"></div>`).join('');
-        return `<div class="reveal">${head}${carouselHTML(cards, b.direction, b.speed)}</div>`;
+        return `<div class="reveal">${head}<div${pxVar('--gal-h', b.imgSize)}>${carouselHTML(cards, b.direction, b.speed)}</div></div>`;
       }
-      return `<div class="reveal">${head}<div class="gallery-grid">${imgs.map(u => `<img src="${escHTML(u)}" onerror="xktImgFallback(this)" loading="lazy">`).join('')}</div></div>`;
+      return `<div class="reveal">${head}<div class="gallery-grid"${pxVar('--gal-h', b.imgSize)}>${imgs.map(u => `<img src="${escHTML(u)}" onerror="xktImgFallback(this)" loading="lazy">`).join('')}</div></div>`;
     }
     case 'features': {
       const items = (b.items || []);
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
-      return `<div class="reveal">${head}<div class="features-grid">${items.map(it => `<div class="feature-card">${renderIcon(it.icon, 'fi')}<h4>${escHTML(it.title || '')}</h4><p>${nl2br(it.text || '')}</p></div>`).join('')}</div></div>`;
+      return `<div class="reveal">${head}<div class="features-grid">${items.map(it => `<div class="feature-card">${renderIcon(it.icon, 'fi')}<h4>${escHTML(it.title || '')}</h4><p${pxStyle(b.textSize)}>${nl2br(it.text || '')}</p></div>`).join('')}</div></div>`;
     }
     case 'faq': {
       const items = (b.items || []);
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
-      return `<div class="reveal">${head}<div class="faq-list">${items.map(it => `<div class="faq-item"><div class="faq-q">${escHTML(it.q || '')}<span class="fq-plus">+</span></div><div class="faq-a">${nl2br(it.a || '')}</div></div>`).join('')}</div></div>`;
+      return `<div class="reveal">${head}<div class="faq-list">${items.map(it => `<div class="faq-item"><div class="faq-q">${escHTML(it.q || '')}<span class="fq-plus">+</span></div><div class="faq-a"${pxStyle(b.textSize)}>${nl2br(it.a || '')}</div></div>`).join('')}</div></div>`;
     }
     case 'banner': {
       const ext = /^https?:/.test(b.btnHref || '') ? ' target="_blank" rel="noopener"' : '';
-      return `<div class="banner-inner reveal"><h2>${nl2br(b.title || '')}</h2>${b.text ? `<p>${nl2br(b.text)}</p>` : ''}${b.btnLabel ? `<a class="btn-primary" href="${escHTML(b.btnHref || '#')}"${ext}>${escHTML(b.btnLabel)}</a>` : ''}</div>`;
+      return `<div class="banner-inner reveal"><h2>${nl2br(b.title || '')}</h2>${b.text ? `<p${pxStyle(b.textSize)}>${nl2br(b.text)}</p>` : ''}${b.btnLabel ? `<a class="btn-primary" href="${escHTML(b.btnHref || '#')}"${ext}>${escHTML(b.btnLabel)}</a>` : ''}</div>`;
     }
     case 'divider': {
       const st = (String(b.style || '1').match(/\d+/) || ['1'])[0];
@@ -3454,6 +3468,8 @@ function applyConfig(cfg) {
         : ` style="-webkit-text-stroke-width:${ow}px"`;
       heroTitle.innerHTML = `<span style="color:${escHTML(c.hero.titleColor || '#fff')}">${titleLetters}</span><br><span class="outline"${outlineStyle}>${escHTML(c.hero.titleOutline)}</span>`;
     }
+    const htf = parseInt(c.hero.titleSize);
+    heroTitle.style.fontSize = htf ? htf + 'px' : '';
   }
   const heroSection = document.querySelector('.hero');
   if (heroSection) heroSection.dataset.align = c.hero.align || 'left';
@@ -3487,6 +3503,8 @@ function applyConfig(cfg) {
   // Stats
   const heroStats = document.getElementById('heroStats');
   if (heroStats) {
+    const statFs = parseInt((c.statsConfig || {}).numberSize);
+    if (statFs) heroStats.style.setProperty('--stat-num-fs', statFs + 'px'); else heroStats.style.removeProperty('--stat-num-fs');
     heroStats.innerHTML = c.stats.map(s => `
       <div class="stat">
         <div class="stat-num"><span class="count" data-target="${escHTML(s.target)}"${s.decimal ? ` data-decimal="${escHTML(s.decimal)}"` : ''}>0</span>${s.suffix ? `<span>${escHTML(s.suffix)}</span>` : ''}</div>
@@ -3531,6 +3549,8 @@ function applyConfig(cfg) {
   const rTitle = document.getElementById('reviewsTitle'); if (rTitle) rTitle.innerHTML = dimTitle(c.reviews.title);
   const testGrid = document.getElementById('testGrid');
   if (testGrid) {
+    const testFs = parseInt(c.reviews.textSize);
+    if (testFs) testGrid.style.setProperty('--test-fs', testFs + 'px'); else testGrid.style.removeProperty('--test-fs');
     const earsSVG = `<svg class="rp-ears" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path class="rp-ear-l" d="${RP_EAR_L_PATH}" /><path class="rp-ear-r" d="${RP_EAR_R_PATH}" /></svg>`;
     const buildCard = (r, i, cls) => {
       const st = Math.max(0, Math.min(5, Number(r.stars) || 5));
@@ -3568,7 +3588,7 @@ function applyConfig(cfg) {
 
   // CTA
   const cTag = document.getElementById('ctaTag'); if (cTag) cTag.textContent = c.cta.tag;
-  const cTitle = document.getElementById('ctaTitle'); if (cTitle) cTitle.innerHTML = ctaTitleHTML(c.cta.title);
+  const cTitle = document.getElementById('ctaTitle'); if (cTitle) { cTitle.innerHTML = ctaTitleHTML(c.cta.title); const ctf = parseInt(c.cta.titleSize); cTitle.style.fontSize = ctf ? ctf + 'px' : ''; }
   const cDesc = document.getElementById('ctaDesc'); if (cDesc) cDesc.textContent = c.cta.desc;
   const cBtn = document.getElementById('ctaBtnText'); if (cBtn) cBtn.textContent = c.cta.btnLabel;
   const cBtn2 = document.getElementById('ctaBtn2');
@@ -3646,6 +3666,8 @@ function applyMusic(m) {
   if (!m || m.enabled === false || !list.length) { wrap.style.display = 'none'; audio.pause(); return; }
   wrap.style.display = '';
   if (m.color) wrap.style.setProperty('--mp-accent', m.color);
+  const mpz = parseInt(m.size);
+  wrap.style.zoom = (mpz && mpz !== 100) ? (mpz / 100) : '';
   wrap.classList.remove('pos-br', 'pos-bl', 'pos-tr', 'pos-tl');
   wrap.classList.add(m.position || 'pos-br');
   const multi = list.length > 1;
