@@ -1030,28 +1030,8 @@
     cursor: url("img/paw_click.png") 7 1, auto !important;
   }
 
-  /* Divisores sutiles morados que se desvanecen en los bordes */
-  section[data-section] { position: relative; }
-  section[data-section]::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(89, 0, 255, 0.15) 15%,
-      rgba(89, 0, 255, 0.55) 50%,
-      rgba(89, 0, 255, 0.15) 85%,
-      transparent 100%);
-    pointer-events: none;
-  }
-  section[data-section]::after {
-    content: ''; position: absolute; top: 3px; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(89, 0, 255, 0.08) 20%,
-      rgba(89, 0, 255, 0.25) 50%,
-      rgba(89, 0, 255, 0.08) 80%,
-      transparent 100%);
-    pointer-events: none;
-  }
+  /* Las lineas divisorias entre secciones ya no se generan automaticamente:
+     usa bloques "Separador" del panel para ponerlas donde quieras. */
 
   #intro {
     position: fixed; inset: 0; z-index: 2000;
